@@ -16,23 +16,25 @@ import { useStage } from "../hooks/useStage";
 const Tetris = () => {
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
-    const [player, updatePlayerPos, resetPlayer] = usePlayer();
-    const [stage, setStage] = useStage(player);
-
-    const moveTetromino = (direction) => {
-        if (!checkCollision(player, stage, { x: direction, y: 0 })) {
-            updatePlayerPos({ x: direction, y: 0 });
-        }
-    }
+    const [player, updatePlayerPos, spawnPlayer, rotatePlayer] = usePlayer(setGameOver);
+    const [stage, setStage] = useStage(player, spawnPlayer);
 
     const startGame = () => {
         setStage(createStage());
-        resetPlayer();
+        spawnPlayer();
+        setGameOver(false);
     }
 
     const drop = () => {
         if (!checkCollision(player, stage, { x: 0, y: 1 })) {
             updatePlayerPos({ x: 0, y: 1, collided: false });
+        } else {
+            // Game Over
+            if(player.pos.y < 1) {
+                setGameOver(true);
+                setDropTime(null);
+            }
+            updatePlayerPos({ x: 0, y: 0, collided: true });
         }
     }
 
@@ -43,12 +45,20 @@ const Tetris = () => {
     const move = ({ keyCode }) => {
         if (!gameOver) { 
             if (keyCode === 37) {
-                moveTetromino(-1);
+                movePlayer(-1);
             } else if (keyCode === 39) {
-                moveTetromino(1);
+                movePlayer(1);
             } else if (keyCode === 40) {
                 dropPlayer();
+            } else if (keyCode === 38) {
+                rotatePlayer(stage, 1);
             }
+        }
+    }
+
+    const movePlayer = (direction) => {
+        if (!checkCollision(player, stage, { x: direction, y: 0 })) {
+            updatePlayerPos({ x: direction, y: 0 });
         }
     }
 
