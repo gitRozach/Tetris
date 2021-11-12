@@ -3,7 +3,7 @@ import { STAGE_WIDTH } from '../tetrisTools';
 import { TETROMINOS, randomTetromino } from '../tetrominos';
 import { checkCollision } from '../tetrisTools';
 
-export const usePlayer = (setGameOver) => {
+export const usePlayer = () => {
     const [player, setPlayer] = useState({
         pos: { x: 0, y: 0},
         tetromino: TETROMINOS[0].shape,

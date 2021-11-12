@@ -10,6 +10,7 @@ import { StyledTetrisWrapper, StyledTetris } from "./styles/StyledTetris";
 
 // Hooks
 import { useState } from "react";
+import { useInterval } from "../hooks/useInterval";
 import { usePlayer } from "../hooks/usePlayer";
 import { useStage } from "../hooks/useStage";
 
@@ -17,9 +18,10 @@ const Tetris = () => {
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
     const [player, updatePlayerPos, spawnPlayer, rotatePlayer] = usePlayer(setGameOver);
-    const [stage, setStage] = useStage(player, spawnPlayer);
+    const [stage, setStage, rowsCleared] = useStage(player, spawnPlayer);
 
     const startGame = () => {
+        setDropTime(1000);
         setStage(createStage());
         spawnPlayer();
         setGameOver(false);
@@ -38,7 +40,16 @@ const Tetris = () => {
         }
     }
 
+    const keyUp = ({ keyCode }) => {
+        if (!gameOver) {
+            if (keyCode === 40) {
+                setDropTime(1000);
+            }
+        }
+    }
+
     const dropPlayer = () => {
+        setDropTime(null);
         drop();
     }
 
@@ -56,6 +67,10 @@ const Tetris = () => {
         }
     }
 
+    useInterval(() => {
+        drop();
+    }, dropTime);
+
     const movePlayer = (direction) => {
         if (!checkCollision(player, stage, { x: direction, y: 0 })) {
             updatePlayerPos({ x: direction, y: 0 });
@@ -63,7 +78,7 @@ const Tetris = () => {
     }
 
     return (
-        <StyledTetrisWrapper role="button" tabIndex="0" onKeyDown={e => move(e)}>
+        <StyledTetrisWrapper role="button" tabIndex="0" onKeyDown={e => move(e)} onKeyUp={e => keyUp(e)}>
             <StyledTetris>
                 <Stage stage={stage}/>
                 <aside>
@@ -71,7 +86,7 @@ const Tetris = () => {
                         
                     <div>
                         <Display text="Score" />
-                        <Display text="Rows" />
+                        <Display text={rowsCleared} />
                         <Display text="Level" />
                     </div>
                     <StartButton callback={startGame}/>
