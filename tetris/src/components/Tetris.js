@@ -1,5 +1,5 @@
 import { createStage, checkCollision } from "../tetrisTools";
-import soundTrack from "../soundtracks/Tetris_Soundtrack_2.mp3";
+import sounds from "../soundtracks/Tetris_Soundtrack_1.mp3";
 
 // Base Components
 import Display from "./Display";
@@ -15,6 +15,7 @@ import { useInterval } from "../hooks/useInterval";
 import { usePlayer } from "../hooks/usePlayer";
 import { useStage } from "../hooks/useStage";
 import { useGameStatus } from "../hooks/useGameStatus";
+import { useSound } from "../hooks/useSound";
 
 const Tetris = () => {
     const [dropTime, setDropTime] = useState(null);
@@ -22,6 +23,7 @@ const Tetris = () => {
     const [player, updatePlayerPos, spawnPlayer, rotatePlayer] = usePlayer();
     const [stage, setStage, rowsCleared] = useStage(player, spawnPlayer);
     const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(rowsCleared);
+    const [playSoundtrack] = useSound([sounds])
 
     const startGame = () => {
         setDropTime(1000);
@@ -31,22 +33,12 @@ const Tetris = () => {
         setScore(0);
         setRows(0);
         setLevel(0);
-        playSoundtrack();
+        playSoundtrack(0);
     }
 
-    const playSoundtrack = () => {
-        const audio = new Audio(soundTrack);
-
-        if (typeof audio.loop == 'boolean') {
-            audio.loop = true;
-        } else {
-            audio.addEventListener('ended', () => {
-                this.currentTime = 0;
-                this.play();
-            }, false);
-        }
-        audio.play();
-    }
+    useInterval(() => {
+        drop();
+    }, dropTime);
 
     const drop = () => {
         // Increase level and reduce drop time after each 10 rows
@@ -82,21 +74,17 @@ const Tetris = () => {
 
     const move = ({ keyCode }) => {
         if (!gameOver) { 
-            if (keyCode === 37) {
+            if (keyCode === 37) /*Arrow Left*/ {
                 movePlayer(-1);
-            } else if (keyCode === 39) {
+            } else if (keyCode === 39) /*Arrow Right*/ {
                 movePlayer(1);
-            } else if (keyCode === 40) {
+            } else if (keyCode === 40) /*Arrow Down*/ {
                 dropPlayer();
-            } else if (keyCode === 38) {
+            } else if (keyCode === 38) /*Arrow Up*/ {
                 rotatePlayer(stage, 1);
             }
         }
     }
-
-    useInterval(() => {
-        drop();
-    }, dropTime);
 
     const movePlayer = (direction) => {
         if (!checkCollision(player, stage, { x: direction, y: 0 })) {
