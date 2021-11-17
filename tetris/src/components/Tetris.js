@@ -4,7 +4,8 @@ import sounds from "../soundtracks/Tetris_Soundtrack_1.mp3";
 // Base Components
 import Display from "./Display";
 import Stage from "./Stage";
-import StartButton from "./StartButton";
+import Button from "./Button";
+import Menu from "./Menu";
 
 // Styled Components
 import { StyledTetrisWrapper, StyledTetris } from "./styles/StyledTetris";
@@ -20,6 +21,8 @@ import { useSound } from "../hooks/useSound";
 const Tetris = () => {
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
+    const [paused, setPaused] = useState(false);
+
     const [player, updatePlayerPos, spawnPlayer, rotatePlayer] = usePlayer();
     const [stage, setStage, rowsCleared] = useStage(player, spawnPlayer);
     const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(rowsCleared);
@@ -37,12 +40,19 @@ const Tetris = () => {
     }
 
     useInterval(() => {
+        if (paused || gameOver) return; 
         drop();
     }, dropTime);
 
+    const movePlayer = (directionX) => {
+        if (!checkCollision(player, stage, { x: directionX, y: 0 })) {
+            updatePlayerPos({ x: directionX, y: 0 });
+        }
+    }
+
     const drop = () => {
         // Increase level and reduce drop time after each 10 rows
-        if (rows > (level + 1) * 10) {
+        if (rows >= (level + 1) * 10) {
             setLevel(prev => prev + 1);
             setDropTime(1000 / (level + 1) + 200);
         }
@@ -59,6 +69,11 @@ const Tetris = () => {
         }
     }
 
+    const dropPlayer = () => {
+        setDropTime(null);
+        drop();
+    }
+
     const keyUp = ({ keyCode }) => {
         if (!gameOver) {
             if (keyCode === 40) {
@@ -67,12 +82,10 @@ const Tetris = () => {
         }
     }
 
-    const dropPlayer = () => {
-        setDropTime(null);
-        drop();
-    }
-
-    const move = ({ keyCode }) => {
+    const keyDown = ({ keyCode }) => {
+        if (keyCode === 27) /*Escape*/ {
+            setPaused(prev => !prev);
+        }
         if (!gameOver) { 
             if (keyCode === 37) /*Arrow Left*/ {
                 movePlayer(-1);
@@ -86,31 +99,29 @@ const Tetris = () => {
         }
     }
 
-    const movePlayer = (direction) => {
-        if (!checkCollision(player, stage, { x: direction, y: 0 })) {
-            updatePlayerPos({ x: direction, y: 0 });
-        }
-    }
-
     return (
         <StyledTetrisWrapper 
             role="button" 
             tabIndex="0" 
-            onKeyDown={e => move(e)} 
-            onKeyUp={e => keyUp(e)}>
+            onKeyDown={e => keyDown(e)} 
+            onKeyUp={e => keyUp(e)}
+            autoFocus>
             
             <StyledTetris>
-                <Stage stage={stage}/>
                 <aside>
-                    {gameOver && <Display gameOver text="Game Over"/>}
+                    {gameOver && <Menu />}
+                    {paused && !gameOver && <Menu items={[
+                        <Button text="Resume" callback={() => setPaused(false)}/>,
+                        <Button text="Settings"/>,
+                        <Button text="About"/>,
+                        <Button text="Restart" callback={() => {startGame(); setPaused(false);}}/>,
+                    ]}/>}
                         
-                    <div>
-                        <Display text={`Score: ${score}`} />
-                        <Display text={`Rows: ${rows}`} />
-                        <Display text={`Level: ${level}`} />
-                    </div>
-                    <StartButton callback={startGame}/>
+                    <Display text={`Score: ${score}`} />
+                    <Display text={`Rows: ${rows}`} />
+                    <Display text={`Level: ${level}`} />
                 </aside>
+                <Stage stage={stage}/>
             </StyledTetris>
         </StyledTetrisWrapper>
     )

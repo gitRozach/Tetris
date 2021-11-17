@@ -1,6 +1,6 @@
 import { StyledDisplay } from "./styles/StyledDisplay";
 
-const Display = ({ gameOver, text }) => (
+const Display = ({ text }) => (
     <StyledDisplay>{text}</StyledDisplay>
 )
 

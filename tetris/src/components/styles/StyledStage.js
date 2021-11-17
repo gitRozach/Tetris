@@ -7,14 +7,14 @@ export const StyledStage = styled.div`
 
     grid-template-rows: repeat(
         ${props => props.height},
-        calc(25vw / ${props => props.width})
+        calc(20vw / ${props => props.width})
     );
 
     grid-template-columns: repeat(${props => props.width}, 1fr);
     grid-gap: 1px;
     border: 0px solid #333;
-    width: 50%;
-    max-width: 25vw;
+    width: 100%;
+    max-width: 20vw;
     background: #111;
 
     @keyframes animate {
@@ -34,12 +34,12 @@ export const StyledStage = styled.div`
         position: absolute;
         left: -2px;
         top: -2px;
-        background: linear-gradient(45deg, #e6fb04, #ff6600, #00ff66, #00ffff, #ff00ff, #ff0099, #6e0dd0, #ff3300, #099fff);
+        background: linear-gradient(90deg, #e6fb04, #ff6600, #00ff66, #00ffff, #ff00ff, #ff0099, #6e0dd0, #ff3300, #099fff);
         background-size: 400%;
         width: calc(100% + 4px);
         height: calc(100% + 4px);
         z-index: -1;
-        animation: animate 60s linear infinite;
+        animation: animate 180s linear infinite;
     }
 
     ::after {

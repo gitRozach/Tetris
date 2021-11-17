@@ -1,25 +1,28 @@
 import styled from 'styled-components';
-import bgImage from '../../img/background.jpg';
 
 export const StyledTetrisWrapper = styled.div`
     width: 100vw;
     height: 100vh;
-    background: url(${bgImage}) #000;
+    background: linear-gradient(0deg, #000, #000);
     background-size: cover;
     overflow: hidden;
 `
 
 export const StyledTetris = styled.div`
     display: flex;
-    align-items: flex-start;
-    padding: 40px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
     margin: 0 auto;
-    max-width: 900px;
+    max-width: 70%;
 
     aside {
         width: 100%;
-        max-width: 200px;
-        display: block;
+        max-height: 100px;
+        display: flex;
+        flex-direction: row;
         padding: 0 20px;
     }
 `
