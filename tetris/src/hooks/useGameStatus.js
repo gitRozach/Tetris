@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 
 export const useGameStatus = (rowsCleared) => {
+    const [username, setUsername] = useState("");
     const [score, setScore] = useState(0);
     const [rows, setRows] = useState(0);
     const [level, setLevel] = useState(0);
+
+    const [gameStarted, setGameStarted] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
+    const [paused, setPaused] = useState(false);
 
     const linePoints = [40, 100, 300, 1200];
 
@@ -21,5 +26,5 @@ export const useGameStatus = (rowsCleared) => {
         calculateScore();
     }, [calculateScore, rowsCleared, score]);
 
-    return [score, setScore, rows, setRows, level, setLevel];
+    return [username, setUsername, score, setScore, rows, setRows, level, setLevel, gameStarted, setGameStarted, gameOver, setGameOver, paused, setPaused];
 }

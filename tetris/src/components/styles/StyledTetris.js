@@ -19,10 +19,10 @@ export const StyledTetris = styled.div`
     max-width: 70%;
 
     aside {
-        width: 100%;
+        width: 70%;
         max-height: 100px;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         padding: 0 20px;
     }
 `
