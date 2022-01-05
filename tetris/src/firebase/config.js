@@ -5,6 +5,9 @@ import 'firebase/compat/firestore';
 // Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+
+// TEST DATABASE CONFIG - NEVER USE IN PRODUCTION MODE WITH THIS CONFIGURATION AND USE ENVIRONMENT VARS INSTEAD !!!
+
 const firebaseConfig = {
   apiKey: "AIzaSyBXdGcQHdevwb2an-aEzjfYzJieOTL-LxA",
   authDomain: "tetris-4d745.firebaseapp.com",
