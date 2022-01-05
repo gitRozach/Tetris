@@ -18,7 +18,7 @@ export const StyledStage = styled.div`
     max-width: 20vw;
     background: #111;
 
-    @keyframes animate {
+    @keyframes color-pos-animation {
         0%{
             background-position: 0 0;
         }
@@ -27,6 +27,15 @@ export const StyledStage = styled.div`
         }
         100%{
             background-position: 0 0;
+        }
+    }
+
+    @keyframes opacity-animation {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
         }
     }
 
@@ -40,7 +49,9 @@ export const StyledStage = styled.div`
         width: calc(100% + 4px);
         height: calc(100% + 4px);
         z-index: -1;
-        animation: animate 180s linear infinite;
+        animation: 
+            color-pos-animation 180s infinite, 
+            opacity-animation 1s forwards;
     }
 
     ::after {

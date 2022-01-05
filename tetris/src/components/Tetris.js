@@ -164,14 +164,14 @@ const Tetris = () => {
             onKeyUp={e => keyUp(e)}>
             
             <StyledTetris>
-                {!gameStarted && <Menu items={[
+                {!gameStarted && <Menu background="rgba(0, 0, 0, 1)" items={[
                     inputComponent,
                     <AltButton text="Start Game" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={() => startGame(username)}/>,
                     <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
                     <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
                 ]} />}
 
-                {gameOver && <Menu items={[
+                {gameOver && <Menu background="rgba(0, 0, 0, 1)" items={[
                     <Display text="Game Over"/>,
                     <Display text={'Username: ' + username}/>,
                     <Display text={'Score: ' + score}/>,
@@ -181,7 +181,7 @@ const Tetris = () => {
                     <AltButton text="Exit" iconUrl="https://img.icons8.com/material-outlined/50/000000/cancel--v1.png" callback={exitGame}/>,
                 ]}/>}
 
-                {paused && !gameOver && gameStarted && <aside><Menu items={[
+                {paused && !gameOver && gameStarted && <aside><Menu background="rgba(0, 0, 0, 1)" items={[
                     <AltButton text="Resume" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={resumeGame}/>,
                     <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
                     <AltButton text="Restart" iconUrl="https://img.icons8.com/glyph-neue/50/000000/replay.png" callback={restartGame} />,
@@ -191,10 +191,10 @@ const Tetris = () => {
 
                 {overlayContent && overlayContent}
                 
-                <Display text={`Level: ${level}`} />
-                <Display text={`Score: ${score}`} />
-                <Display text={`Rows: ${rows}`} />
-                <Stage stage={stage} />
+                {gameStarted && <><Display text={`Score: ${score}`} fontSize='1.8rem' />
+                <Display text={`Rows: ${rows}`} fontSize='1.8rem' />
+                <Display text={`Level: ${level}`} fontSize='1.8rem' />
+                <Stage stage={stage} /></>}
             </StyledTetris>
         </StyledTetrisWrapper>
     )

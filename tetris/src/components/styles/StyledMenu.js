@@ -13,8 +13,19 @@ export const StyledMenu = styled.div`
     width: 100%;
     height: 100%;
 
-    background: rgba(255, 255, 255, 0.2);
+    background: transparent;
 
     overflow: hidden;
     z-index: 3;
+
+    @keyframes styled-menu-animation {
+        0% {
+            background: transparent;
+        }
+        100% {
+            background: ${props => props.background ? props.background : 'rgba(255, 255, 255, 0.2)'};
+        }
+    }
+
+    animation: styled-menu-animation 1s ease forwards;
 `

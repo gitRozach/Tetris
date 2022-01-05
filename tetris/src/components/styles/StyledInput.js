@@ -1,15 +1,18 @@
 import styled from 'styled-components';
 
 export const StyledInput = styled.input`
+    position: relative;
+    border-radius: 2rem;
     width: 100%;
-    min-height: 40px;
+    margin: 1rem 0rem;
 
-    border: 1px solid gray;
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: inherit;
-    text-align: center;
+    border: none;
+
+    padding: 1rem 0rem;
+    
+    font-size: 1.6rem;
     color: white;
-    outline: none;
-    background: none;
+    background-color: #121821;
+    text-align: center;
+    z-index: 1;
 `;
