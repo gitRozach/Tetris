@@ -6,7 +6,9 @@ import Display from "./Display";
 import Input from "./Input";
 import Stage from "./Stage";
 import Button from "./Button";
+import AltButton from "./AltButton";
 import Menu from "./Menu";
+import SwiperMenu from "./SwiperMenu";
 
 // Animations
 import { motion } from 'framer-motion'
@@ -39,6 +41,7 @@ const Tetris = () => {
         setDropTime(1000);
         setStage(createStage());
         spawnPlayer();
+        
         setGameOver(false);
         setGameStarted(true);
         setPaused(false);
@@ -46,19 +49,20 @@ const Tetris = () => {
         setRows(0);
         setLevel(0);
         playSoundtrack(0);
-        focusComponent();
+        
+        focusMainComponent();
 
     }
 
     const resumeGame = () => {
         setPaused(false);
-        focusComponent();
+        focusMainComponent();
     }
 
     const restartGame = () => {
         startGame(username); 
         setPaused(false);
-        focusComponent();
+        focusMainComponent();
     }
 
     const exitGame = () => {
@@ -67,12 +71,12 @@ const Tetris = () => {
         setPaused(false);
     }
 
-    const focusComponent = (componentId = 'tetris-wrapper') => {
+    const focusMainComponent = (componentId = 'tetris-wrapper') => {
         document.getElementById(componentId).focus(); 
     }
 
     useEffect(() => {
-        focusComponent();
+        focusMainComponent();
     }, []);
 
     useInterval(() => {
@@ -100,6 +104,7 @@ const Tetris = () => {
             if(player.pos.y < 1) {
                 setGameOver(true);
                 setDropTime(null);
+                return;
             }
             updatePlayerPos({ x: 0, y: 0, collided: true });
         }
@@ -126,14 +131,14 @@ const Tetris = () => {
                 setOverlayContent(null);
             } else {
                 // Focus the tetris wrapper to for key events
-                if(paused) focusComponent();
+                if(paused) focusMainComponent();
                 // Close the pause menu if there is no overlay showing
                 setPaused(prev => !prev);
             }
         }
         /* Start-Game-Menu Key-Handling */
         if (!gameStarted) {
-            if (keyCode == 13) /*Enter*/ {
+            if (keyCode === 13) /*Enter*/ {
                 startGame(username);
             }
         }
@@ -161,30 +166,35 @@ const Tetris = () => {
             <StyledTetris>
                 {!gameStarted && <Menu items={[
                     inputComponent,
-                    <Button text="Start Game" callback={() => startGame(username)}/>,
+                    <AltButton text="Start Game" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={() => startGame(username)}/>,
+                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
                 ]} />}
 
                 {gameOver && <Menu items={[
                     <Display text="Game Over"/>,
-                    <Display text={'Your Username: ' + username}/>,
-                    <Display text={'Your Score: ' + score}/>,
-                    <Button text="Restart" callback={restartGame}/>,
-                    <Button text="Settings" callback={() => setOverlayContent(<Display text="Settings"/>)}/>,
-                    <Button text="Exit" callback={exitGame}/>,
+                    <Display text={'Username: ' + username}/>,
+                    <Display text={'Score: ' + score}/>,
+                    <AltButton text="Restart" iconUrl="https://img.icons8.com/glyph-neue/50/000000/replay.png" callback={restartGame}/>,
+                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)}/>,
+                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    <AltButton text="Exit" iconUrl="https://img.icons8.com/material-outlined/50/000000/cancel--v1.png" callback={exitGame}/>,
                 ]}/>}
-                {paused && !gameOver && <aside><Menu items={[
-                    <Button text="Resume" callback={resumeGame}/>,
-                    <Button text="Settings" callback={() => setOverlayContent(<Display text="Settings"/>)} />,
-                    <Button text="About" callback={() => setOverlayContent(<Display text="About"/>)} />,
-                    <Button text="Restart" callback={restartGame} />,
-                    <Button text="Exit" callback={exitGame} />,
-                ]}/></aside>}
-                {overlayContent && <Menu items={[overlayContent]} />}
 
+                {paused && !gameOver && gameStarted && <aside><Menu items={[
+                    <AltButton text="Resume" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={resumeGame}/>,
+                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    <AltButton text="Restart" iconUrl="https://img.icons8.com/glyph-neue/50/000000/replay.png" callback={restartGame} />,
+                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    <AltButton text="Exit" iconUrl="https://img.icons8.com/material-outlined/50/000000/cancel--v1.png" callback={exitGame} />,
+                ]}/></aside>}
+
+                {overlayContent && overlayContent}
+                
                 <Display text={`Level: ${level}`} />
-                <Stage stage={stage}/>
                 <Display text={`Score: ${score}`} />
                 <Display text={`Rows: ${rows}`} />
+                <Stage stage={stage} />
             </StyledTetris>
         </StyledTetrisWrapper>
     )

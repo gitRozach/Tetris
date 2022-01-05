@@ -13,8 +13,8 @@ export const StyledMenu = styled.div`
     width: 100%;
     height: 100%;
 
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(255, 255, 255, 0.2);
 
     overflow: hidden;
-    z-index: 9999;
+    z-index: 3;
 `

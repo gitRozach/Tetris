@@ -4,6 +4,12 @@ export const useSound = (audioIterable) => {
     const [soundtrack, setSoundtrack] = useState(null);
 
     const playSoundtrack = (index, loop=true) => {
+        // Stop current playing audio before starting the new audio
+        if (soundtrack) {
+            soundtrack.pause();
+            soundtrack.src = '';
+        }
+
         let track = new Audio(audioIterable[index]);
         setSoundtrack(track);
 
@@ -24,5 +30,9 @@ export const useSound = (audioIterable) => {
         soundtrack.pause();
     }
 
-    return [playSoundtrack, pauseSoundtrack];
+    const stopSoundtrack = () => {
+        soundtrack.stop();
+    }
+
+    return [playSoundtrack, pauseSoundtrack, stopSoundtrack];
 }
