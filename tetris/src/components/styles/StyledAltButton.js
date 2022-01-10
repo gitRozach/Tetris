@@ -2,17 +2,18 @@ import styled from 'styled-components';
 
 export const StyledAltButton = styled.button`
     cursor: pointer;
-    border-radius: 2rem;
-    width: 100%;
-    margin: 1rem 0rem;
-
     border: none;
+    border-radius: ${props => props.borderRadius ? props.borderRadius : '2rem'};
+    background-color: ${props => props.background ? props.background : '#121821'};
 
-    padding: 1rem 3rem 1rem 7rem;
+    width: ${props => props.width ? props.width : '100%'};
+    height: ${props => props.height ? props.height : '3.9rem'};
+    margin: ${props => props.margin ? props.margin : '1rem 0rem'};
+    padding: ${props => props.padding ? props.padding : '1rem 3rem 1rem 7rem'};
     position: relative;
+    
     font-size: 1.6rem;
     color: ${props => props.color ? props.color : 'white'};
-    background-color: ${props => props.background ? props.background : '#121821'};
     z-index: 1;
 
     :hover {
@@ -60,9 +61,9 @@ export const StyledAltButton = styled.button`
         content: "";
         display: block;
         width: 3.9rem;
-        height: 3.9rem;
+        height: ${props => props.height ? props.height : '3.9rem'};
         background-color: ${props => props.color ? props.color : 'white'};
-        border-radius: 2rem;
+        border-radius: ${props => props.borderRadius ? props.borderRadius : '2rem'};
         position: absolute;
         z-index: 1;
         left: 0;

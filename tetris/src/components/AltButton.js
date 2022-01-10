@@ -6,10 +6,20 @@ const AltButton = ({iconUrl,
                     background,
                     width,
                     height,
-                    borderRadius, 
+                    borderRadius,
+                    margin,
+                    padding, 
                     callback
                     }) => {
-    return (<StyledAltButton onClick={callback}>
+    return (<StyledAltButton 
+                color={color} 
+                background={background} 
+                width={width} 
+                height={height} 
+                borderRadius={borderRadius} 
+                margin={margin} 
+                padding={padding} 
+                onClick={callback}>
         <img alt="" src={iconUrl}></img>
         <span>{text}</span>
     </StyledAltButton>);

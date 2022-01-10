@@ -34,7 +34,7 @@ const Tetris = () => {
     const [username, setUsername, score, setScore, rows, setRows, level, setLevel, gameStarted, setGameStarted, gameOver, setGameOver, paused, setPaused] = useGameStatus(rowsCleared);
     const [playSoundtrack] = useSound([sounds]);
     const [storage, firestore, storedHighscores] = useHighscoreStorage('users');
-    const [inputValue, inputComponent] = Input();
+    const [inputValue, inputComponent] = Input({fontSize: "2.5rem"});
 
     const startGame = (playerUsername) => {
         setUsername(playerUsername ? playerUsername : "Unknown Username");
@@ -60,7 +60,7 @@ const Tetris = () => {
     }
 
     const restartGame = () => {
-        startGame(username); 
+        startGame(inputValue); 
         setPaused(false);
         focusMainComponent();
     }
@@ -139,7 +139,7 @@ const Tetris = () => {
         /* Start-Game-Menu Key-Handling */
         if (!gameStarted) {
             if (keyCode === 13) /*Enter*/ {
-                startGame(username);
+                startGame(inputValue);
             }
         }
         if (!gameOver && !paused && gameStarted) { 
@@ -165,17 +165,18 @@ const Tetris = () => {
             
             <StyledTetris>
                 {!gameStarted && <Menu background="rgba(0, 0, 0, 1)" items={[
+                    <Display text="PLEASE ENTER YOUR USERNAME" />,
                     inputComponent,
-                    <AltButton text="Start Game" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={() => startGame(username)}/>,
+                    <AltButton text="Start Game" margin="10rem 0rem 20px 0rem" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={() => startGame(inputValue)}/>,
                     <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
                     <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
                 ]} />}
 
                 {gameOver && <Menu background="rgba(0, 0, 0, 1)" items={[
                     <Display text="Game Over"/>,
-                    <Display text={'Username: ' + username}/>,
-                    <Display text={'Score: ' + score}/>,
-                    <AltButton text="Restart" iconUrl="https://img.icons8.com/glyph-neue/50/000000/replay.png" callback={restartGame}/>,
+                    <Display text={inputValue}/>,
+                    <Display text={'Score: ' + score} />,
+                    <AltButton text="Restart" margin="10rem 0rem 20px 0rem" iconUrl="https://img.icons8.com/glyph-neue/50/000000/replay.png" callback={restartGame}/>,
                     <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)}/>,
                     <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
                     <AltButton text="Exit" iconUrl="https://img.icons8.com/material-outlined/50/000000/cancel--v1.png" callback={exitGame}/>,

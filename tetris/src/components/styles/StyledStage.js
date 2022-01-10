@@ -5,17 +5,32 @@ export const StyledStage = styled.div`
     display: grid;
     z-index: 1;
 
-    grid-template-rows: repeat(
-        ${props => props.height},
-        calc(20vw / ${props => props.width})
-    );
+    @media screen and (orientation : portrait) {
+        grid-template-rows: repeat(
+            ${props => props.height},
+            calc(40vw / ${props => props.width})
+        );
+    
+        grid-template-columns: repeat(${props => props.width}, 1fr);
+        grid-gap: 1px;
+        max-width: 40vw;
+    }
 
-    grid-template-columns: repeat(${props => props.width}, 1fr);
-    grid-gap: 1px;
+    @media screen and (orientation : landscape) {
+        grid-template-rows: repeat(
+            ${props => props.height},
+            calc(40vh / ${props => props.width})
+        );
+    
+        grid-template-columns: repeat(${props => props.width}, 1fr);
+        grid-gap: 1px;
+        max-width: 40vh;
+    }
+    
+
     border: 0px solid #333;
     margin: 40px 0px;
     width: 100%;
-    max-width: 20vw;
     background: #111;
 
     @keyframes color-pos-animation {

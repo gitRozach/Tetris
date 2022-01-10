@@ -9,7 +9,7 @@ export const StyledSwiperMenu = styled.div`
     
     height: 100%;
     width: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 1);
     
     margin: 0;
     padding: 0;
