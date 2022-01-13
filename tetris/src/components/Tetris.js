@@ -34,7 +34,10 @@ const Tetris = () => {
     const [username, setUsername, score, setScore, rows, setRows, level, setLevel, gameStarted, setGameStarted, gameOver, setGameOver, paused, setPaused] = useGameStatus(rowsCleared);
     const [playSoundtrack] = useSound([sounds]);
     const [storage, firestore, storedHighscores] = useHighscoreStorage('users');
-    const [inputValue, inputComponent] = Input({fontSize: "2.5rem"});
+    
+    const [usernameInputValue, usernameInputComponent] = Input({fontSize: "2.5rem"});
+    const settingsSwiperMenu = SwiperMenu({swiperSlides: [<Menu items={[<Display text="Audio Settings" />]} />, <Menu items={[<Display text="Video Settings" />]} />], });
+    const infoSwiperMenu = SwiperMenu({swiperSlides: [<Menu items={[<Display text="Info 1" />]} />, <Menu items={[<Display text="Info 2" />]} />], });
 
     const startGame = (playerUsername) => {
         setUsername(playerUsername ? playerUsername : "Unknown Username");
@@ -60,7 +63,7 @@ const Tetris = () => {
     }
 
     const restartGame = () => {
-        startGame(inputValue); 
+        startGame(usernameInputValue); 
         setPaused(false);
         focusMainComponent();
     }
@@ -118,7 +121,7 @@ const Tetris = () => {
     const keyUp = ({ keyCode }) => {
         if (gameOver || !gameStarted || paused) return;
 
-        if (keyCode === 40) {
+        if (keyCode === 40) /*Arrow Down*/ {
             setDropTime(1000 / (level + 1) + 200);
         }
     }
@@ -139,7 +142,7 @@ const Tetris = () => {
         /* Start-Game-Menu Key-Handling */
         if (!gameStarted) {
             if (keyCode === 13) /*Enter*/ {
-                startGame(inputValue);
+                startGame(usernameInputValue);
             }
         }
         if (!gameOver && !paused && gameStarted) { 
@@ -165,36 +168,38 @@ const Tetris = () => {
             
             <StyledTetris>
                 {!gameStarted && <Menu background="rgba(0, 0, 0, 1)" items={[
+                    <Display text="REACTETRIS" fontSize="5rem" margin="0 0 10rem 0"/>,
                     <Display text="PLEASE ENTER YOUR USERNAME" />,
-                    inputComponent,
-                    <AltButton text="Start Game" margin="10rem 0rem 20px 0rem" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={() => startGame(inputValue)}/>,
-                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
-                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    usernameInputComponent,
+                    <AltButton text="Start Game" margin="10rem 0rem 20px 0rem" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={() => startGame(usernameInputValue)}/>,
+                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(settingsSwiperMenu)} />,
+                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(infoSwiperMenu)} />,
                 ]} />}
 
                 {gameOver && <Menu background="rgba(0, 0, 0, 1)" items={[
-                    <Display text="Game Over"/>,
-                    <Display text={inputValue}/>,
-                    <Display text={'Score: ' + score} />,
+                    <Display text="GAME OVER"/>,
+                    <Display text={usernameInputValue}/>,
+                    <Display text={'SCORE: ' + score} />,
                     <AltButton text="Restart" margin="10rem 0rem 20px 0rem" iconUrl="https://img.icons8.com/glyph-neue/50/000000/replay.png" callback={restartGame}/>,
-                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)}/>,
-                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(settingsSwiperMenu)}/>,
+                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(infoSwiperMenu)} />,
                     <AltButton text="Exit" iconUrl="https://img.icons8.com/material-outlined/50/000000/cancel--v1.png" callback={exitGame}/>,
                 ]}/>}
 
                 {paused && !gameOver && gameStarted && <aside><Menu background="rgba(0, 0, 0, 1)" items={[
+                    <Display text="REACTETRIS" fontSize="5rem" margin="0 0 10rem 0"/>,
                     <AltButton text="Resume" iconUrl="https://img.icons8.com/glyph-neue/64/000000/play.png" callback={resumeGame}/>,
-                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    <AltButton text="Settings" iconUrl="https://img.icons8.com/material/50/000000/settings--v5.png" callback={() => setOverlayContent(settingsSwiperMenu)} />,
                     <AltButton text="Restart" iconUrl="https://img.icons8.com/glyph-neue/50/000000/replay.png" callback={restartGame} />,
-                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(<SwiperMenu />)} />,
+                    <AltButton text="About" iconUrl="https://img.icons8.com/material/50/000000/info--v1.png" callback={() => setOverlayContent(infoSwiperMenu)} />,
                     <AltButton text="Exit" iconUrl="https://img.icons8.com/material-outlined/50/000000/cancel--v1.png" callback={exitGame} />,
                 ]}/></aside>}
 
-                {overlayContent && overlayContent}
+                {overlayContent}
                 
-                {gameStarted && <><Display text={`Score: ${score}`} fontSize='1.8rem' />
-                <Display text={`Rows: ${rows}`} fontSize='1.8rem' />
-                <Display text={`Level: ${level}`} fontSize='1.8rem' />
+                {gameStarted && <><Display text={`SCORE: ${score}`} fontSize='1.8rem' />
+                <Display text={`ROWS: ${rows}`} fontSize='1.8rem' />
+                <Display text={`LEVEL: ${level}`} fontSize='1.8rem' />
                 <Stage stage={stage} /></>}
             </StyledTetris>
         </StyledTetrisWrapper>

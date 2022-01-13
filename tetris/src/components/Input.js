@@ -5,6 +5,7 @@ const Input = ({ text, font, fontSize, margin, padding }) => {
     const [inputValue, setInputValue] = useState(text ? text : "");
     return [inputValue, <StyledInput defaultValue={inputValue}
                                     value={inputValue}
+                                    spellCheck={false}
                                     onChange={e => {console.log(e.target.value); setInputValue(e.target.value);}}
                                     font={font}
                                     fontSize={fontSize} 

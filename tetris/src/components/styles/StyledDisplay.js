@@ -28,11 +28,11 @@ export const StyledDisplay = styled.div`
     }
 
     background-image: linear-gradient(90deg, #845EC2, #D65DB1, #FF6F91, #FFC75F, #F9F871);
-    background-size: 500%;
+    background-size: 400%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: color-pos-animation 3s infinite alternate;
+    animation: color-pos-animation 5s infinite alternate;
 
 
     @keyframes color-pos-animation {

@@ -23,7 +23,7 @@ export const StyledMenu = styled.div`
             background: transparent;
         }
         100% {
-            background: ${props => props.background ? props.background : 'rgba(255, 255, 255, 0.2)'};
+            background: ${props => props.background ? props.background : 'rgba(0, 0, 0, 1)'};
         }
     }
 

@@ -9,7 +9,7 @@ export const StyledSwiperMenu = styled.div`
     
     height: 100%;
     width: 100%;
-    background: rgba(0, 0, 0, 1);
+    background: transparent;
     
     margin: 0;
     padding: 0;
@@ -22,15 +22,13 @@ export const StyledSwiperMenu = styled.div`
 
     .swiper {
         width: 100%;
-        padding-top: 50px;
-        padding-bottom: 50px;
     }
       
     .swiper-slide {
         background-position: center;
         background-size: cover;
         width: 300px;
-        height: 500px;
+        height: 100vh;
     }
     
     .swiper-slide img {
@@ -38,7 +36,18 @@ export const StyledSwiperMenu = styled.div`
         width: 100%;
     }
 
-    z-index: 10;
+    @keyframes styled-swiper-menu-animation {
+        0% {
+            background: transparent;
+        }
+        100% {
+            background: ${props => props.background ? props.background : 'rgba(0, 0, 0, 1)'};
+        }
+    }
+
+    z-index: 3;
+    animation: styled-swiper-menu-animation 1s ease forwards;
+
 `
 
 export default StyledSwiperMenu;

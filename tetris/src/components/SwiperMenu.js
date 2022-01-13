@@ -1,29 +1,29 @@
 // Import Swiper styled-components wrapper
 import StyledSwiperMenu from "./styles/StyledSwiperMenu";
 
-import { EffectCoverflow } from 'swiper';
+import { EffectCoverflow, Navigation, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react';
 import 'swiper/swiper.min.css';
 import 'swiper/modules/pagination/pagination.min.css';
+import 'swiper/modules/navigation/navigation.min.css';
 
-import Menu from './Menu';
-import Display from './Display';
-import Button from './AltButton';
-
-const SwiperMenu = () => {
-    return (<StyledSwiperMenu>
-        <Swiper modules={[EffectCoverflow]} effect={'coverflow'} grabCursor={true} centeredSlides={true} slidesPerView={'2'} coverflowEffect={{
-            "rotate": 110,
-            "stretch": 0,
-            "depth": 100,
-            "modifier": 1,
-            "slideShadows": true
-            }} 
-            pagination={true} className="mySwiper">
-                <SwiperSlide><Menu items={[<Display text="Audio Settings" />]} /></SwiperSlide>
-                <SwiperSlide><Menu items={[<Display text="Game Settings" />]} /></SwiperSlide>
-                <SwiperSlide><Menu items={[<Display text="Video Settings" />]} /></SwiperSlide>
-                <SwiperSlide><Menu items={[<Display text="Developer Settings" />]} /></SwiperSlide>
+const SwiperMenu = ({ swiperSlides, background }) => {
+    return (<StyledSwiperMenu background={background}>
+        <Swiper modules={[Navigation, Pagination, EffectCoverflow]} 
+                navigation={true}                                                    
+                pagination={true}                                                    
+                effect={'coverflow'}                                                   
+                grabCursor={true}                                                  
+                centeredSlides={true}                                                
+                slidesPerView={'1'}                                             
+                coverflowEffect={{
+                    "rotate": 110,
+                    "stretch": 0,
+                    "depth": 100,
+                    "modifier": 1,
+                    "slideShadows": true,                                                
+                }}>
+                    {swiperSlides.map(item => <SwiperSlide>{item}</SwiperSlide>)}
         </Swiper>
     </StyledSwiperMenu>);
 }
