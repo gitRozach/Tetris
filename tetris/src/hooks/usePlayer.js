@@ -24,10 +24,12 @@ export const usePlayer = () => {
 
         const position = playerClone.pos.x;
         let offset = 1;
+        
         // Neccessary for not overriding existing tetrominos by rotating
         while (checkCollision(playerClone, stage, { x: 0, y: 0 })) {
             playerClone.pos.x += offset;
             offset = -(offset + (offset > 0 ? 1 : -1));
+            
             // If rotating is not allowed at this point (collision with other tetromino), rotate it back
             if (offset > playerClone.tetromino[0].length) {
                 rotate(playerClone.tetromino, -direction);
@@ -46,7 +48,7 @@ export const usePlayer = () => {
                 x: (prev.pos.x += x), 
                 y: (prev.pos.y += y), 
             },
-            collided,
+            collided: collided,
         }));
     } 
 

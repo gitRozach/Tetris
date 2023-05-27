@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { createStage } from '../tetrisTools';
+import { checkCollision, createStage } from '../tetrisTools';
 
-export const useStage = (player, resetPlayer) => {
+export const useStage = (player, resetPlayer, setGameOver) => {
     const [stage, setStage] = useState(createStage());
     const [rowsCleared, setRowsCleared] = useState(0);
 
     useEffect(() => {
         setRowsCleared(0);
 
-        const sweepRows = (newStage) => {
+        const sweepRows = (newStage) => {    
             return newStage.reduce((ack, row) => {
                 // If a row does not contain any empty cells, clear the row
                 if (row.findIndex(cell => cell[0] === 0) === -1) {
@@ -43,11 +43,10 @@ export const useStage = (player, resetPlayer) => {
             if (player.collided) {
                 resetPlayer();
                 return sweepRows(newStage);
-            }
-
+            } 
             return newStage;
         }
-
+        
         setStage(prev => updateStage(prev));
     }, [player, resetPlayer]);
 

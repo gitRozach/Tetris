@@ -1,7 +1,7 @@
-import Tetris from './components/Tetris';
+import Tetris from './components/controls/Tetris';
 
 const App = () => (
-    <div className="App">
+    <div className="App" style={{overflow: 'hidden'}}>
       <Tetris />
     </div>
 )

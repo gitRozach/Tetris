@@ -1,10 +1,19 @@
 export const TETROMINOS = {
     0: {
+        name: '0',
         shape: [[0]],
         color: '0, 0, 0'
     },
 
+    // PRE-Delete Tetromino for animation purposes
+    X: {
+        name: 'X',
+        shape: [[0]],
+        color: '222, 222, 222'
+    },
+
     I: {
+        name: 'I',
         shape: [
             [0, 'I', 0, 0], [0, 'I', 0, 0], [0, 'I', 0, 0], [0, 'I', 0, 0],
         ],
@@ -12,6 +21,7 @@ export const TETROMINOS = {
     },
 
     J: {
+        name: 'J',
         shape: [
             [0, 'J', 0], [0, 'J', 0], ['J', 'J', 0],
         ],
@@ -19,6 +29,7 @@ export const TETROMINOS = {
     },
 
     L: {
+        name: 'L',
         shape: [
             [0, 'L', 0], [0, 'L', 0], [0, 'L', 'L'],
         ],
@@ -26,6 +37,7 @@ export const TETROMINOS = {
     },
 
     O: {
+        name: 'O',
         shape: [
             ['O', 'O'], ['O', 'O']
         ],
@@ -33,6 +45,7 @@ export const TETROMINOS = {
     },
 
     S: {
+        name: 'S',
         shape: [
             [0, 'S', 'S'], ['S', 'S', 0], [0, 0, 0]
         ],
@@ -40,6 +53,7 @@ export const TETROMINOS = {
     },
 
     T: {
+        name: 'T',
         shape: [
             ['T', 'T', 'T'], [0, 'T', 0], [0, 0, 0]
         ],
@@ -47,6 +61,7 @@ export const TETROMINOS = {
     },
 
     Z: {
+        name: 'Z',
         shape: [
             ['Z', 'Z', 0], [0, 'Z', 'Z'], [0, 0, 0]
         ],
@@ -54,8 +69,15 @@ export const TETROMINOS = {
     }
 }
 
-export const randomTetromino = () => {
+export const randomTetrominoName = () => {
     const tetrominos = 'IJLOSTZ';
-    const randTetromino = tetrominos[Math.floor(Math.random() * (tetrominos.length))];
-    return TETROMINOS[randTetromino];
+    return tetrominos[Math.floor(Math.random() * (tetrominos.length))];
 }
+
+export const tetrominoByName = (name) => (
+    TETROMINOS[name]
+)
+
+export const randomTetromino = () => (
+    TETROMINOS[randomTetrominoName()]
+);
