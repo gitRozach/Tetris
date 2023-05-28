@@ -100,6 +100,7 @@ const Tetris = () => {
 
     const restartGame = () => {
         setTimePlayed(0);
+        setBlocks({I: 0, J: 0, L: 0, O: 0, S: 0, T: 0, Z: 0});
         startGame(username);
         setPaused(false);
         focusComponent(MAIN_COMPONENT_ID);
@@ -107,6 +108,7 @@ const Tetris = () => {
 
     const exitGame = () => {
         setTimePlayed(0);
+        setBlocks({I: 0, J: 0, L: 0, O: 0, S: 0, T: 0, Z: 0});
         setGameOver(false);
         setGameStarted(false);
         setPaused(false);
