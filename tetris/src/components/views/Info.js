@@ -2,7 +2,7 @@ import TextOutput from "../controls/TextOutput";
 
 const Info = () => (
     <div>
-        <TextOutput text="Info 1" />
+        <TextOutput text="Made by Rozach with no <3" color="white"/>
     </div>
 );
 

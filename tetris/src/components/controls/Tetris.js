@@ -114,9 +114,53 @@ const Tetris = () => {
         setPaused(false);
     }
 
+    const keyUp = ({ keyCode }) => {
+        if (keyCode === 40) /*Arrow Down*/ {
+            if (gameOver || !gameStarted || paused) return;
+            setDropTime(1000 / (level + 1) + 200);
+        }
+
+        /* Escape-Key-Handling */
+        if (keyCode === 27) /*Escape*/ {
+            console.log("ESC pressed");
+
+            // If there is an overlay, close the overlay first
+            if(overlayContent !== null) {
+                setOverlayContent(null);
+            } else {
+                // Focus the tetris wrapper to for key events
+                if(paused) focusComponent(MAIN_COMPONENT_ID);
+                // Close the pause menu if there is no overlay showing
+                setPaused(prev => !prev);
+            }
+        }
+        /* Start-Game-Menu Key-Handling */
+        if (!gameStarted) {
+            if (keyCode === 13) /*Enter*/ {
+                startGame(username);
+            }
+        }
+    }
+
+    const keyDown = ({ keyCode }) => {
+        if (!gameOver && !paused && gameStarted) { 
+            if (keyCode === 37) /*Arrow Left*/ {
+                movePlayer(-1);
+            } else if (keyCode === 39) /*Arrow Right*/ {
+                movePlayer(1);
+            } else if (keyCode === 40) /*Arrow Down*/ {
+                dropPlayer();
+            } else if (keyCode === 38) /*Arrow Up*/ {
+                rotatePlayerIfNotColliding(stage, 1);
+            }
+        }
+    }
+
     useEffect(() => {
         focusComponent(MAIN_COMPONENT_ID);
-    }, []);
+        window.addEventListener("keyup", keyUp);
+        return () => window.removeEventListener("keyup", keyUp);
+    }, [keyUp]);
 
     useInterval(() => {
         if (paused || gameOver || !gameStarted) return; 
@@ -270,48 +314,6 @@ const Tetris = () => {
         setStage(prev => updateStage(prev));
     }, [player, spawnPlayer]);
 
-    const keyUp = ({ keyCode }) => {
-        if (keyCode === 40) /*Arrow Down*/ {
-            if (gameOver || !gameStarted || paused) return;
-            setDropTime(1000 / (level + 1) + 200);
-        }
-
-        /* Escape-Key-Handling */
-        if (keyCode === 27) /*Escape*/ {
-            console.log("ESC pressed");
-
-            // If there is an overlay, close the overlay first
-            if(overlayContent) {
-                setOverlayContent(null);
-            } else {
-                // Focus the tetris wrapper to for key events
-                if(paused) focusComponent(MAIN_COMPONENT_ID);
-                // Close the pause menu if there is no overlay showing
-                setPaused(prev => !prev);
-            }
-        }
-        /* Start-Game-Menu Key-Handling */
-        if (!gameStarted) {
-            if (keyCode === 13) /*Enter*/ {
-                startGame(username);
-            }
-        }
-    }
-
-    const keyDown = ({ keyCode }) => {
-        if (!gameOver && !paused && gameStarted) { 
-            if (keyCode === 37) /*Arrow Left*/ {
-                movePlayer(-1);
-            } else if (keyCode === 39) /*Arrow Right*/ {
-                movePlayer(1);
-            } else if (keyCode === 40) /*Arrow Down*/ {
-                dropPlayer();
-            } else if (keyCode === 38) /*Arrow Up*/ {
-                rotatePlayerIfNotColliding(stage, 1);
-            }
-        }
-    }
-
     const openSettingsOverlay = () => {
         setOverlayContent(settingsSwiperMenu);
     }
@@ -321,9 +323,8 @@ const Tetris = () => {
             id="tetris-wrapper"
             role="button"
             tabIndex="0"
-            onKeyDown={e => keyDown(e)}
-            onKeyUp={e => keyUp(e)}>
-            
+            onKeyDown={e => keyDown(e)}>
+                            
             <StyledTetris>
                 {audioElement}
 
