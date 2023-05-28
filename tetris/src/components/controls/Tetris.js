@@ -114,7 +114,9 @@ const Tetris = () => {
         setPaused(false);
     }
 
-    const keyUp = ({ keyCode }) => {
+    const keyUp = useCallback(({ keyCode }) => {
+        console.log("keyUp Callback called");
+
         if (keyCode === 40) /*Arrow Down*/ {
             if (gameOver || !gameStarted || paused) return;
             setDropTime(1000 / (level + 1) + 200);
@@ -140,7 +142,7 @@ const Tetris = () => {
                 startGame(username);
             }
         }
-    }
+    }, [gameOver, gameStarted, level, overlayContent, paused, startGame, username]);
 
     const keyDown = ({ keyCode }) => {
         if (!gameOver && !paused && gameStarted) { 
@@ -324,7 +326,7 @@ const Tetris = () => {
             role="button"
             tabIndex="0"
             onKeyDown={e => keyDown(e)}>
-                            
+
             <StyledTetris>
                 {audioElement}
 
