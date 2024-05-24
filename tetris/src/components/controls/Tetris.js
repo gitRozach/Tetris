@@ -87,10 +87,14 @@ const Tetris = () => {
   const [stage, setStage] = useState(createStage());
 
   const usernameInput = TextInput({
+    id: "usernameInput",
     text: username,
     fontFamily: "Exo 2",
     fontSize: "1.6rem",
-    onChange: (value) => setUsername(value),
+    onChange: (value) => {
+      setUsername(value);
+      // focusComponent("usernameInput");
+    },
   });
 
   const [soundtrackVolume, tetrisCellSideLength, settingsMenu] = Settings();
@@ -170,10 +174,13 @@ const Tetris = () => {
         if (overlayContent !== null) {
           setOverlayContent(null);
         } else {
-          // Focus the tetris wrapper to for key events
-          if (paused) focusComponent(MAIN_COMPONENT_ID);
-          // Close the pause menu if there is no overlay showing
           setPaused((prev) => !prev);
+          // Focus the tetris wrapper to for key events
+          if (paused) {
+            // Close the pause menu if there is no overlay showing
+            setPaused(false);
+            focusComponent(MAIN_COMPONENT_ID);
+          }
         }
       }
       /* Start-Game-Menu Key-Handling */
@@ -183,7 +190,8 @@ const Tetris = () => {
         }
       }
     },
-    [gameOver, gameStarted, level, overlayContent, paused, startGame, username]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [gameOver, gameStarted, level, overlayContent, paused, username]
   );
 
   const keyDown = ({ keyCode }) => {
@@ -201,7 +209,7 @@ const Tetris = () => {
   };
 
   useEffect(() => {
-    focusComponent(MAIN_COMPONENT_ID);
+    // focusComponent(MAIN_COMPONENT_ID);
     window.addEventListener("keyup", keyUp);
     return () => window.removeEventListener("keyup", keyUp);
   }, [keyUp]);
@@ -425,7 +433,7 @@ const Tetris = () => {
                   }}
                 >
                   <AltButton
-                    text="Start Game"
+                    text="START GAME"
                     iconUrl={PlayIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -434,7 +442,7 @@ const Tetris = () => {
                     callback={() => startGame(username)}
                   />
                   <AltButton
-                    text="Settings"
+                    text="GAME SETTINGS"
                     iconUrl={SettingsIcon}
                     iconWidth="1.9rem"
                     iconHeight="1.9rem"
@@ -443,7 +451,7 @@ const Tetris = () => {
                     callback={() => openSettingsOverlay()}
                   />
                   <AltButton
-                    text="About"
+                    text="ABOUT"
                     iconUrl={InfoIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -491,7 +499,7 @@ const Tetris = () => {
                   }}
                 >
                   <AltButton
-                    text="Restart"
+                    text="RESTART GAME"
                     iconUrl={RestartIcon}
                     iconWidth="1.7rem"
                     iconHeight="1.7rem"
@@ -500,7 +508,7 @@ const Tetris = () => {
                     callback={restartGame}
                   />
                   <AltButton
-                    text="Statistics"
+                    text="GAME STATISTICS"
                     iconUrl={StatsIcon}
                     iconWidth="2.4rem"
                     iconHeight="2.4rem"
@@ -509,7 +517,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(statsSwiperMenu)}
                   />
                   <AltButton
-                    text="Settings"
+                    text="GAME SETTINGS"
                     iconUrl={SettingsIcon}
                     iconWidth="1.9rem"
                     iconHeight="1.9rem"
@@ -518,7 +526,7 @@ const Tetris = () => {
                     callback={openSettingsOverlay}
                   />
                   <AltButton
-                    text="About"
+                    text="ABOUT"
                     iconUrl={InfoIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -527,7 +535,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(infoSwiperMenu)}
                   />
                   <AltButton
-                    text="Exit"
+                    text="EXIT GAME"
                     iconUrl={CloseIcon}
                     iconWidth="3rem"
                     iconHeight="3rem"
@@ -572,7 +580,7 @@ const Tetris = () => {
                   }}
                 >
                   <AltButton
-                    text="Resume"
+                    text="RESUME GAME"
                     iconUrl={PlayIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -581,7 +589,7 @@ const Tetris = () => {
                     callback={resumeGame}
                   />
                   <AltButton
-                    text="Statistics"
+                    text="GAME STATISTICS"
                     iconUrl={StatsIcon}
                     iconWidth="2.4rem"
                     iconHeight="2.4rem"
@@ -590,7 +598,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(statsSwiperMenu)}
                   />
                   <AltButton
-                    text="Settings"
+                    text="GAME SETTINGS"
                     iconUrl={SettingsIcon}
                     iconWidth="1.9rem"
                     iconHeight="1.9rem"
@@ -599,7 +607,7 @@ const Tetris = () => {
                     callback={openSettingsOverlay}
                   />
                   <AltButton
-                    text="Restart"
+                    text="RESTART GAME"
                     iconUrl={RestartIcon}
                     iconWidth="1.7rem"
                     iconHeight="1.7rem"
@@ -608,7 +616,7 @@ const Tetris = () => {
                     callback={restartGame}
                   />
                   <AltButton
-                    text="About"
+                    text="ABOUT"
                     iconUrl={InfoIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -617,7 +625,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(infoSwiperMenu)}
                   />
                   <AltButton
-                    text="Exit"
+                    text="EXIT GAME"
                     iconUrl={CloseIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
