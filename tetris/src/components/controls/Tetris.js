@@ -54,8 +54,20 @@ import {
   tetrominoByName,
 } from "../../tetrominos";
 import Statistics from "../views/Statistics";
+import { CellStatus, CellType } from "./Cell";
+
+// import {
+//   KeyboardNavigatorBoard,
+//   KeyboardNavigatorElement,
+//   useKeyboardNavigator,
+// } from "react-keyboard-navigator";
 
 const Tetris = () => {
+  // const { keyboardNavigator } = useKeyboardNavigator({
+  //   // prevent the default page scrolling behavior when we are using the keyboard to switch the active state between components
+  //   eventCallback: (evt) => evt.preventDefault(),
+  // });
+
   const [overlayContent, setOverlayContent] = useState(null);
 
   const [player, setPlayer] = useState({
@@ -91,10 +103,7 @@ const Tetris = () => {
     text: username,
     fontFamily: "Exo 2",
     fontSize: "1.6rem",
-    onChange: (value) => {
-      setUsername(value);
-      // focusComponent("usernameInput");
-    },
+    onChange: (value) => setUsername(value),
   });
 
   const [soundtrackVolume, tetrisCellSideLength, settingsMenu] = Settings();
@@ -157,7 +166,7 @@ const Tetris = () => {
     setPaused(false);
   };
 
-  const keyUp = useCallback(
+  const keyUpEventListener = useCallback(
     ({ keyCode }) => {
       console.log("keyUp Callback called");
 
@@ -174,12 +183,15 @@ const Tetris = () => {
         if (overlayContent !== null) {
           setOverlayContent(null);
         } else {
-          setPaused((prev) => !prev);
           // Focus the tetris wrapper to for key events
           if (paused) {
             // Close the pause menu if there is no overlay showing
             setPaused(false);
-            focusComponent(MAIN_COMPONENT_ID);
+            if (gameStarted) {
+              focusComponent(MAIN_COMPONENT_ID);
+            }
+          } else {
+            setPaused(true);
           }
         }
       }
@@ -209,10 +221,11 @@ const Tetris = () => {
   };
 
   useEffect(() => {
-    // focusComponent(MAIN_COMPONENT_ID);
-    window.addEventListener("keyup", keyUp);
-    return () => window.removeEventListener("keyup", keyUp);
-  }, [keyUp]);
+    const keyupEventListenerName = "keyup";
+    window.addEventListener(keyupEventListenerName, keyUpEventListener);
+    return () =>
+      window.removeEventListener(keyupEventListenerName, keyUpEventListener);
+  }, [keyUpEventListener]);
 
   useInterval(() => {
     if (paused || gameOver || !gameStarted) return;
@@ -320,9 +333,14 @@ const Tetris = () => {
     const sweepRows = (newStage) => {
       return newStage.reduce((ack, row) => {
         // If a row does not contain any empty cells, clear the row
-        if (row.findIndex((cell) => cell[0] === 0) === -1) {
+        if (row.findIndex((cell) => cell[0] === CellType.EMPTY_CELL) === -1) {
           setCurrentRowsCleared((prev) => prev + 1);
-          ack.unshift(Array(newStage[0].length).fill([0, "clear"]));
+          ack.unshift(
+            Array(newStage[0].length).fill([
+              CellType.EMPTY_CELL,
+              CellStatus.CLEAR,
+            ])
+          );
           return ack;
         }
         ack.push(row);
@@ -333,16 +351,20 @@ const Tetris = () => {
     const updateStage = (prevStage) => {
       // Flush the stage before
       const newStage = prevStage.map((row) =>
-        row.map((cell) => (cell[1] === "clear" ? [0, "clear"] : cell))
+        row.map((cell) =>
+          cell[1] === CellStatus.CLEAR
+            ? [CellType.EMPTY_CELL, CellStatus.CLEAR]
+            : cell
+        )
       );
 
       // Draw the tetromino
       player.tetromino.forEach((row, y) => {
         row.forEach((value, x) => {
-          if (value !== 0) {
+          if (value !== CellType.EMPTY_CELL) {
             newStage[y + player.pos.y][x + player.pos.x] = [
               value,
-              `${player.collided ? "merged" : "clear"}`,
+              `${player.collided ? CellStatus.MERGED : CellStatus.CLEAR}`,
             ];
           }
         });
@@ -366,6 +388,7 @@ const Tetris = () => {
     };
 
     setStage((prev) => updateStage(prev));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player, spawnPlayer]);
 
   const openSettingsOverlay = () => {
@@ -397,7 +420,7 @@ const Tetris = () => {
               blurRadius="15px"
             />
             <AnimatedMenu
-              keyPressedHandler={keyUp}
+              keyPressedHandler={keyUpEventListener}
               background="rgba(0, 0, 0, 1)"
               items={[
                 <TextOutput
@@ -433,7 +456,7 @@ const Tetris = () => {
                   }}
                 >
                   <AltButton
-                    text="START GAME"
+                    text="START"
                     iconUrl={PlayIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -442,7 +465,7 @@ const Tetris = () => {
                     callback={() => startGame(username)}
                   />
                   <AltButton
-                    text="GAME SETTINGS"
+                    text="SETTINGS"
                     iconUrl={SettingsIcon}
                     iconWidth="1.9rem"
                     iconHeight="1.9rem"
@@ -477,7 +500,7 @@ const Tetris = () => {
             {/*<TetrisBackground />*/}
             <BlurryBackground />
             <AnimatedMenu
-              keyPressedHandler={keyUp}
+              keyPressedHandler={keyUpEventListener}
               background="rgba(0, 0, 0, 1)"
               items={[
                 <div className="game-over-container">
@@ -499,7 +522,7 @@ const Tetris = () => {
                   }}
                 >
                   <AltButton
-                    text="RESTART GAME"
+                    text="RESTART"
                     iconUrl={RestartIcon}
                     iconWidth="1.7rem"
                     iconHeight="1.7rem"
@@ -508,7 +531,7 @@ const Tetris = () => {
                     callback={restartGame}
                   />
                   <AltButton
-                    text="GAME STATISTICS"
+                    text="STATISTICS"
                     iconUrl={StatsIcon}
                     iconWidth="2.4rem"
                     iconHeight="2.4rem"
@@ -517,7 +540,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(statsSwiperMenu)}
                   />
                   <AltButton
-                    text="GAME SETTINGS"
+                    text="SETTINGS"
                     iconUrl={SettingsIcon}
                     iconWidth="1.9rem"
                     iconHeight="1.9rem"
@@ -535,7 +558,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(infoSwiperMenu)}
                   />
                   <AltButton
-                    text="EXIT GAME"
+                    text="EXIT"
                     iconUrl={CloseIcon}
                     iconWidth="3rem"
                     iconHeight="3rem"
@@ -561,7 +584,7 @@ const Tetris = () => {
             <TetrisBackground animated />
             <BlurryBackground />
             <AnimatedMenu
-              keyPressedHandler={keyUp}
+              keyPressedHandler={keyUpEventListener}
               background="rgba(0, 0, 0, 1)"
               items={[
                 <TextOutput
@@ -580,7 +603,7 @@ const Tetris = () => {
                   }}
                 >
                   <AltButton
-                    text="RESUME GAME"
+                    text="RESUME"
                     iconUrl={PlayIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -589,7 +612,7 @@ const Tetris = () => {
                     callback={resumeGame}
                   />
                   <AltButton
-                    text="GAME STATISTICS"
+                    text="STATISTICS"
                     iconUrl={StatsIcon}
                     iconWidth="2.4rem"
                     iconHeight="2.4rem"
@@ -598,7 +621,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(statsSwiperMenu)}
                   />
                   <AltButton
-                    text="GAME SETTINGS"
+                    text="SETTINGS"
                     iconUrl={SettingsIcon}
                     iconWidth="1.9rem"
                     iconHeight="1.9rem"
@@ -607,7 +630,7 @@ const Tetris = () => {
                     callback={openSettingsOverlay}
                   />
                   <AltButton
-                    text="RESTART GAME"
+                    text="RESTART"
                     iconUrl={RestartIcon}
                     iconWidth="1.7rem"
                     iconHeight="1.7rem"
@@ -625,7 +648,7 @@ const Tetris = () => {
                     callback={() => setOverlayContent(infoSwiperMenu)}
                   />
                   <AltButton
-                    text="EXIT GAME"
+                    text="EXIT"
                     iconUrl={CloseIcon}
                     iconWidth="2.2rem"
                     iconHeight="2.2rem"
@@ -698,7 +721,7 @@ const Tetris = () => {
                   borderRadius="50%"
                   callback={() => {
                     dropPlayer();
-                    keyUp({ keyCode: 40 });
+                    keyUpEventListener({ keyCode: 40 });
                   }}
                 />
                 <Button

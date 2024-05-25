@@ -13,7 +13,10 @@ const TextInput = ({
     <StyledTextInput
       id={id}
       value={text}
-      spellCheck={false}
+      autoFocus
+      autoCapitalize="characters"
+      autoComplete="off"
+      spellCheck="false"
       onChange={(e) => onChange(e.target.value)}
       fontFamily={fontFamily}
       fontSize={fontSize}
