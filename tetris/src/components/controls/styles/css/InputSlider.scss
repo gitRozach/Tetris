@@ -1,6 +1,7 @@
 .slider {
+    appearance: none;
     -webkit-appearance: none;
-    width: 200px;
+    width: 25rem;
     height: 10px;
     border-radius: 5px;
     background: #d3d3d3;
@@ -13,11 +14,11 @@
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 5rem;
+    height: 5rem;
     border-radius: 50%;
     background: #9c2ccf;
-    cursor: pointer;   
+    cursor: pointer;
 }
 
 .slider::-moz-range-thumb {

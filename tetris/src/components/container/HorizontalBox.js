@@ -1,3 +1,4 @@
+import { React } from 'react';
 import { StyledHorizontalBox } from './styles/StyledHorizontalBox';
 
 const HorizontalBox = ({children}) => {

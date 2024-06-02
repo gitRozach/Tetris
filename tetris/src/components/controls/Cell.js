@@ -1,15 +1,6 @@
 import { memo } from "react";
 import { StyledCell } from "./styles/StyledCell";
-import { TETROMINOS } from "../../tetrominos";
-
-export const CellStatus = {
-  CLEAR: "clear",
-  MERGED: "merged",
-};
-
-export const CellType = {
-  EMPTY_CELL: 0,
-};
+import { TETROMINOS } from "../../tools";
 
 const Cell = ({ type, sideLength }) => (
   <StyledCell

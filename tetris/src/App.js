@@ -1,3 +1,4 @@
+import React from 'react';
 import Tetris from './components/controls/Tetris';
 
 const App = () => (

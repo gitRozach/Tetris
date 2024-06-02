@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { storage, firestore } from "../firebase/config";
 
 export const useHighscoreStorage = (username) => {

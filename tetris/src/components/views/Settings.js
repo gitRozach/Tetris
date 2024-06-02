@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useSettings } from "../../hooks/useSettings";
 import GridBox from "../container/GridBox";
 import InputRange from "../controls/InputSlider";
+import TextSelect from "../controls/TextSelect";
 
 const Settings = () => {
   const [
@@ -9,6 +10,10 @@ const Settings = () => {
     setSoundtrackVolume,
     tetrisCellSideLength,
     setTetrisCellSideLength,
+    tetrisGridAnimationColor,
+    setTetrisGridAnimationColor,
+    tetrisTextAnimationColor,
+    setTetrisTextAnimationColor
   ] = useSettings();
 
   const changeSoundtrackVolume = useCallback(
@@ -25,6 +30,14 @@ const Settings = () => {
     },
     [tetrisCellSideLength]
   );
+
+  const changeTetrisGridColorAnimation = useCallback((value) => {
+    setTetrisGridAnimationColor(value);
+  }, [tetrisGridAnimationColor]);
+
+  const changeTetrisTextColorAnimation = useCallback((value) => {
+    setTetrisTextAnimationColor(value);
+  }, [tetrisTextAnimationColor]);
 
   const [
     soundtrackVolumeValue,
@@ -51,10 +64,25 @@ const Settings = () => {
     changeTetrisCellSideLength
   );
 
+  const [
+    tetrisGridAnimationColorValue, 
+    setTetrisGridAnimationColorValue, 
+    tetrisGridAnimationColorComponent
+  ] = TextSelect(['Blue', 'Fade', 'None'], 'Blue', changeTetrisGridColorAnimation);
+
+  const [
+    tetrisTextAnimationColorValue, 
+    setTetrisTextAnimationColorValue, 
+    tetrisTextAnimationColorComponent
+  ] = TextSelect(['White', 'Blue', 'Fade'], 'White', changeTetrisTextColorAnimation);
+
+
   return [
     soundtrackVolume,
     tetrisCellSideLength,
-    <GridBox>
+    tetrisGridAnimationColor,
+    tetrisTextAnimationColor,
+    <GridBox key="settings-grid">
       <h3
         style={{
           color: "white",
@@ -66,6 +94,7 @@ const Settings = () => {
         Soundtrack Volume
       </h3>
       {soundtrackVolumeComponent}
+
       <h3
         style={{
           color: "white",
@@ -74,10 +103,34 @@ const Settings = () => {
           justifySelf: "start",
         }}
       >
-        Tetris Size
+        Grid Size
       </h3>
       {tetrisCellSideLengthComponent}
-    </GridBox>,
+
+      <h3
+        style={{
+          color: "white",
+          padding: "0 0 0 50px",
+          margin: "0",
+          justifySelf: "start",
+        }}
+      >
+        Grid Color
+      </h3>
+      {tetrisGridAnimationColorComponent}
+
+      <h3
+        style={{
+          color: "white",
+          padding: "0 0 0 50px",
+          margin: "0",
+          justifySelf: "start",
+        }}
+      >
+        Text Color
+      </h3>
+      {tetrisTextAnimationColorComponent}
+    </GridBox>
   ];
 };
 

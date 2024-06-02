@@ -2,7 +2,7 @@ import { memo } from 'react';
 import Cell from "./Cell";
 import { StyledTetrisBackground } from "./styles/StyledTetrisBackground";
 import { StyledStage } from "./styles/StyledStage";
-import { randomTetrominoName } from '../../tetrominos';
+import { randomTetrominoType } from '../../tools';
 
 const BACKGROUND_WIDTH = 50;
 const BACKGROUND_HEIGHT = 50;
@@ -11,7 +11,7 @@ const TetrisBackgroundCells = [];
 for (let y = 0; y < BACKGROUND_HEIGHT; ++y) {
     let currentRow = [];
     for (let x = 0; x < BACKGROUND_WIDTH; ++x) {
-        currentRow.push([randomTetrominoName(), 'collided']);
+        currentRow.push([randomTetrominoType(), 'collided']);
     }
     TetrisBackgroundCells.push(currentRow);
 }

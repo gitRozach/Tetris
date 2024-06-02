@@ -50,7 +50,7 @@ export const StyledStage = styled.div`
         position: absolute;
         left: -2px;
         top: -2px;
-        background: linear-gradient(90deg, #e6fb04, #ff6600, #00ff66, #00ffff, #ff00ff, #ff0099, #6e0dd0, #ff3300, #099fff);
+        ${props => props.animationColor === 'Blue' ? 'background: blue;' : props.animationColor === 'Fade' ? 'background: linear-gradient(90deg, #e6fb04, #ff6600, #00ff66, #00ffff, #ff00ff, #ff0099, #6e0dd0, #ff3300, #099fff);' : props.animatedColor === 'None' ? 'transparent' : 'transparent'}
         background-size: 400%;
         width: calc(100% + 4px);
         height: calc(100% + 4px);

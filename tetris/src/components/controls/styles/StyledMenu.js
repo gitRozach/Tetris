@@ -13,10 +13,8 @@ export const StyledMenu = styled.div`
     width: 100%;
     height: 100%;
 
-    padding: ${props => props.padding ? props.padding: '0'};
-    margin: ${props => props.margin ? props.margin: '0'};
-
-    background: transparent;
+    ${props => props.padding ? `padding: ${props.padding};` : 'padding: 0;'}
+    ${props => props.margin ? `margin: ${props.margin};` : 'margin: 0;'}
 
     overflow-x: hidden;
     overflow-y: scroll;
@@ -27,13 +25,13 @@ export const StyledMenu = styled.div`
             background: transparent;
         }
         100% {
-            background: ${props => props.background ? props.background : 'rgba(0, 0, 0, 1)'};
+            background: ${props => props.background ? props.background : 'rgba(0, 0, 0, 1);'};
         }
     }
 
-    /*animation: styled-menu-animation 1s ease forwards;*/
+    ${props => props.background ? 'animation: styled-menu-animation 1s ease forwards;' : ''};
 
-    .motion-container {
+    .menu-container {
         display: flex;
         flex-direction: column;
         align-items: center;

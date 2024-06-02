@@ -4,10 +4,10 @@ export const useSound = (audioIterable, audioVolume) => {
     const [soundtrack, setSoundtrack] = useState(null);
     const audioElement = <audio id="audioElement" defaultValue={audioVolume}/>
 
-    const playSoundtrack = (index, loop=true) => {
+     const playSoundtrack = async (index, loop=true) => {
         // Stop current playing audio before starting the new audio
         if (soundtrack) {
-            document.querySelector('#audioElement').pause();
+            await document.querySelector('#audioElement').pause();
             document.querySelector('#audioElement').src = '';
         }
 
@@ -20,9 +20,9 @@ export const useSound = (audioIterable, audioVolume) => {
             if (typeof audioElement.loop == 'boolean') {
                 document.querySelector('#audioElement').loop = true;
             } else {
-                document.querySelector('#audioElement').addEventListener('ended', () => {
+                document.querySelector('#audioElement').addEventListener('ended', async () => {
                     document.querySelector('#audioElement').currentTime = 0;
-                    document.querySelector('#audioElement').play();
+                    await document.querySelector('#audioElement').play();
                 }, false);
             }
         }

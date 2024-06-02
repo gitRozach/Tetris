@@ -1,3 +1,4 @@
+import { React } from 'react';
 import { StyledVerticalBox } from './styles/StyledVerticalBox';
 
 const VerticalBox = ({children}) => {

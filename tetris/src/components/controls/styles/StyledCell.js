@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { CellType } from "../Cell";
+import { CellType } from "../../../tools";
 
 export const StyledCell = styled.div`
   width: ${(props) => (props.sideLength ? props.sideLength : "30px")};
@@ -7,7 +7,7 @@ export const StyledCell = styled.div`
   box-sizing: border-box;
   background: rgba(${(props) => props.color}, 0.8);
   border: ${(props) =>
-    props.type === CellType.EMPTY_CELL
+    props.type === CellType.EMPTY
       ? "0px solid"
       : props.sideLength
       ? "calc(" + props.sideLength + " / 7.5) solid"

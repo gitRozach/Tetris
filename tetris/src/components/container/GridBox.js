@@ -1,3 +1,4 @@
+import { React } from 'react'
 import { StyledGridBox } from './styles/StyledGridBox';
 
 const GridBox = ({children}) => (
