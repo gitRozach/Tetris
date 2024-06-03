@@ -9,13 +9,6 @@ const TextSelect = (options, defaultOption, onChangeCallback) => {
             setOptionValue(event.target.value);
             onChangeCallback(event.target.value);
         }}>{options.map(currentOption => <option key={`${currentOption}-option`}>{currentOption}</option>)}</StyledTextSelect>
-        // return (
-        //     <select defaultValue={optionValue} onChange={(event) => {
-        //         setOptionValue(event.target.value);
-        //         onChangeCallback(event.target.value);
-        //     }}>
-        //         {options.map(currentOption => <option key={`${currentOption}-option`}>{currentOption}</option>)}
-        //     </select>)
     }, [optionValue])
 
     return [optionValue, setOptionValue, selectComponent]

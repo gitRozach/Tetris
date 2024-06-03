@@ -22,14 +22,15 @@ export const StyledMenu = styled.div`
 
     @keyframes styled-menu-animation {
         0% {
-            background: transparent;
+            background: rgba(0, 0, 0, 0.0);
         }
         100% {
-            background: ${props => props.background ? props.background : 'rgba(0, 0, 0, 1);'};
+            background: ${props => props.background ? props.background : 'rgba(0, 0, 0, 1.0);'};
         }
     }
 
-    ${props => props.background ? 'animation: styled-menu-animation 1s ease forwards;' : ''};
+    ${props => props.animated ? 'animation: styled-menu-animation 1s ease forwards;' : ''};
+    ${props => !props.animated && props.background ? `background: ${props.background}` : 'background: rgba(0, 0, 0, 0)'};
 
     .menu-container {
         display: flex;
