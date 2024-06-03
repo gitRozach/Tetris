@@ -37,10 +37,10 @@ export const StyledTextOutput = styled.div`
         }
     }
 
-    ${props => props.animationColor === 'Fade' ? 'background-image: linear-gradient(90deg, #845EC2, #D65DB1, #FF6F91, #FFC75F, #F9F871);' : ''}
-    ${props => props.animationColor === 'Fade' ? 'background-size: 400%;' : ''}
-    ${props => props.animationColor === 'Fade' ? '-webkit-background-clip: text;' : ''}
-    ${props => props.animationColor === 'Fade' ? 'background-clip: text;' : ''}
-    ${props => props.animationColor === 'Fade' ? 'animation: color-pos-animation 10s infinite alternate;' : ''}
-    
+    ${props => props.color ? `color: ${props.color};` : ''}
+    ${props => !props.color && props.animationColor === 'Fade' ? 'background-image: linear-gradient(90deg, #845EC2, #D65DB1, #FF6F91, #FFC75F, #F9F871);' : ''}
+    ${props => !props.color && props.animationColor === 'Fade' ? 'background-size: 400%;' : ''}
+    ${props => !props.color && props.animationColor === 'Fade' ? '-webkit-background-clip: text;' : ''}
+    ${props => !props.color && props.animationColor === 'Fade' ? 'background-clip: text;' : ''}
+    ${props => !props.color && props.animationColor === 'Fade' ? 'animation: color-pos-animation 10s infinite alternate;' : ''}
 `

@@ -77,6 +77,7 @@ const Tetris = () => {
     name: TETROMINOS[0].name,
     tetromino: TETROMINOS[0].shape,
     collided: false,
+    droppingTillCollision: false
   });
 
   const [currentRowsCleared, setCurrentRowsCleared] = useState(0);
@@ -230,12 +231,12 @@ const Tetris = () => {
       updatePlayerPos({ x: 0, y: 1, collided: false });
     } else {
       // Game Over
-      if (player.pos.y < 1) {
+      if (player.pos.y < 1 && !player.droppingTillCollision) {
         setGameOver(true);
         setDropTime(null);
         return;
       }
-      updatePlayerPos({ x: 0, y: 0, collided: true });
+      updatePlayerPos({ x: 0, y: 0, collided: true, droppingTillCollision: false });
     }
   };
 
@@ -245,7 +246,8 @@ const Tetris = () => {
   };
 
   const dropPlayerUntilCollided = () => {
-    setDropTime(50);
+    setPlayer({ ...player, droppingTillCollision: true });
+    setDropTime(25);
   };
 
   const rotatePlayer = (playerMatrix, direction) => {
@@ -281,7 +283,7 @@ const Tetris = () => {
     setPlayer(playerClone);
   };
 
-  const updatePlayerPos = ({ x, y, collided }) => {
+  const updatePlayerPos = ({ x, y, collided, droppingTillCollision }) => {
     setPlayer((prev) => ({
       ...prev,
       pos: {
@@ -389,7 +391,7 @@ const Tetris = () => {
               overflow: "hidden",
             }}
           >
-            <TetrisBackground animated />
+            <TetrisBackground animated={false} />
             <BlurryBackground
               blurColor={"rgba(0, 0, 0, 0.4)"}
               blurRadius="15px"
@@ -474,7 +476,7 @@ const Tetris = () => {
               overflow: "hidden",
             }}
           >
-            <TetrisBackground />
+            <TetrisBackground animated={false}/>
             <BlurryBackground />
             <Menu
               animated
@@ -567,7 +569,7 @@ const Tetris = () => {
               overflow: "hidden",
             }}
           >
-            <TetrisBackground animated />
+            <TetrisBackground animated={false} />
             <BlurryBackground />
             <Menu
               animated={false}

@@ -6,7 +6,7 @@ import TextOutput from '../controls/TextOutput';
 const ConfirmationDialog = (confirmationText, onConfirmedCallback, onRejectedCallback) => {
     return <div>
         <VerticalBox>
-            <TextOutput color="rgb(255, 255, 255)">{confirmationText}</TextOutput>
+            <TextOutput text={confirmationText} color="rgb(255, 255, 255)" />
             <HorizontalBox>
                 <Button callback={onConfirmedCallback}>Yes</Button>
                 <Button callback={onRejectedCallback}>No</Button>
