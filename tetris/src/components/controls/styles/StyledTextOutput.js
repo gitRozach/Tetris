@@ -1,6 +1,20 @@
 import styled from 'styled-components';
+import { COLOR_WHITE, COLOR_BLUE, COLOR_FADE } from '../../../constants/settingsConstants';
 
 export const StyledTextOutput = styled.div`
+    @keyframes color-pos-animation {
+        0%{
+            background-position: left;
+        }
+        100%{
+            background-position: right;
+        }
+    }
+
+    ::selection {
+        background: transparent;
+    }
+
     box-sizing: border-box;
     margin: ${props => props.margin ? props.margin : '0'};
     padding: ${props => props.padding ? props.padding : '0'};
@@ -14,7 +28,7 @@ export const StyledTextOutput = styled.div`
 
     cursor: default;
 
-    ${props => props.animationColor === 'White' ? 'color: white;' : props.animationColor === 'Fade' ? 'color: transparent;' : 'color: Blue;'}
+    color: ${props => props.animationColor === COLOR_WHITE ? 'white' : props.animationColor === COLOR_FADE ? 'rgba(0,0,0,0)' : props.animationColor === COLOR_BLUE ? 'Blue' : 'transparent'};
 
     font-family: '${props => props.fontFamily ? props.fontFamily : 'Tahoma'}';
     font-weight: bold;
@@ -24,23 +38,10 @@ export const StyledTextOutput = styled.div`
     text-align: ${props => props.textAlign ? props.textAlign : 'center'};
     white-space: ${props => props.whiteSpace ? props.whiteSpace : 'nowrap'};
 
-    ::selection {
-        background: transparent;
-    }
-
-    @keyframes color-pos-animation {
-        0%{
-            background-position: left;
-        }
-        100%{
-            background-position: right;
-        }
-    }
-
     ${props => props.color ? `color: ${props.color};` : ''}
-    ${props => !props.color && props.animationColor === 'Fade' ? 'background-image: linear-gradient(90deg, #845EC2, #D65DB1, #FF6F91, #FFC75F, #F9F871);' : ''}
-    ${props => !props.color && props.animationColor === 'Fade' ? 'background-size: 400%;' : ''}
-    ${props => !props.color && props.animationColor === 'Fade' ? '-webkit-background-clip: text;' : ''}
-    ${props => !props.color && props.animationColor === 'Fade' ? 'background-clip: text;' : ''}
-    ${props => !props.color && props.animationColor === 'Fade' ? 'animation: color-pos-animation 10s infinite alternate;' : ''}
+    ${props => !props.color && props.animationColor === COLOR_FADE ? 'background-image: linear-gradient(90deg, #845EC2, #D65DB1, #FF6F91, #FFC75F, #F9F871);' : ''}
+    ${props => !props.color && props.animationColor === COLOR_FADE ? 'background-size: 400%;' : ''}
+    ${props => !props.color && props.animationColor === COLOR_FADE ? '-webkit-background-clip: text;' : ''}
+    ${props => !props.color && props.animationColor === COLOR_FADE ? 'background-clip: text;' : ''}
+    ${props => !props.color && props.animationColor === COLOR_FADE ? 'animation: color-pos-animation 10s infinite alternate;' : ''}
 `

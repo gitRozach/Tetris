@@ -15,6 +15,7 @@ export const StyledButton = styled.button`
     color: ${props => props.color ? props.color : 'white'};
     background: ${props => props.background ? props.background : '#333'};
     font-family: ${props => props.fontFamily ? props.fontFamily : 'Pixel, Arial, Helvetica, sans-serif'};
+    font-weight: ${props => props.fontWeight ? props.fontWeight : 'bold'};
     font-size: ${props => props.fontSize ? props.fontSize : '1rem'};
     outline: none;
     cursor: pointer;
@@ -40,6 +41,6 @@ export const StyledButton = styled.button`
     }*/
 
     :hover {
-        animation: 1s hoverAnimation ease forwards;
+        animation: .2s hoverAnimation ease forwards;
     }
 `

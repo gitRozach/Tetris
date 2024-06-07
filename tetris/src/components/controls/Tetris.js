@@ -19,7 +19,7 @@ import StatsIcon from "../../svg/stats-dark.svg";
 import SettingsIcon from "../../svg/settings.svg";
 
 // Base Components
-import React from "react";
+import React, { useMemo } from "react";
 import TextOutput from "./TextOutput";
 import TextInput from "./TextInput";
 import Stage from "./Stage";
@@ -56,18 +56,11 @@ import {
 } from "../../tools";
 import Statistics from "../views/Statistics";
 import { CellStatus, CellType } from "../../tools";
-
-// import {
-//   KeyboardNavigatorBoard,
-//   KeyboardNavigatorElement,
-//   useKeyboardNavigator,
-// } from "react-keyboard-navigator";
+import { usePlayerHighscore } from "../../hooks/usePlayerHighscore";
+import { COLOR_FADE, COLOR_WHITE } from "../../constants/settingsConstants";
+import { KEY_ENTER, KEY_ARROW_DOWN, KEY_ARROW_LEFT, KEY_ARROW_RIGHT, KEY_ARROW_UP, KEY_ESCAPE } from "../../constants/keycodeConstants";
 
 const Tetris = () => {
-  // const { keyboardNavigator } = useKeyboardNavigator({
-  //   // prevent the default page scrolling behavior when we are using the keyboard to switch the active state between components
-  //   eventCallback: (evt) => evt.preventDefault(),
-  // });
 
   const [overlayContent, setOverlayContent] = useState(null);
   const closeOverlay = () => setOverlayContent(null);
@@ -77,10 +70,10 @@ const Tetris = () => {
     name: TETROMINOS[0].name,
     tetromino: TETROMINOS[0].shape,
     collided: false,
-    droppingTillCollision: false
   });
 
   const [currentRowsCleared, setCurrentRowsCleared] = useState(0);
+  const [readHighscoreCookie, saveHighscoreCookie] = usePlayerHighscore();
   const [username, setUsername, score, setScore, rows, setRows, blocks, setBlocks, level, setLevel] = usePlayerProgress(currentRowsCleared);
   const [dropTime, setDropTime] = useState(null);
   const [timePlayed, setTimePlayed] = useState(0);
@@ -97,15 +90,15 @@ const Tetris = () => {
     onChange: (value) => setUsername(value),
   });
 
-  const [soundtrackVolume, tetrisCellSideLength, tetrisGridAnimationColor, tetrisTextAnimationColor, settingsMenu] = Settings();
-  const infoMenu = Info();
-  const statsView = Statistics(username, score, rows, blocks, timePlayed);
-  const restartGameDialog = ConfirmationDialog("Test", () => { closeOverlay(); startGame(username); }, closeOverlay);
+  const [soundtrackVolume, gridCellSideLength, gridColor, textColor, settingsComponent] = Settings();
+  const aboutComponent = Info();
+  const statsComponent = Statistics(username, score, rows, blocks, timePlayed);
+  const restartGameConfirmationComponent = ConfirmationDialog("RESTART GAME ?", () => { closeOverlay(); startGame(username); }, closeOverlay);
 
-  const settingsSwiperMenu = <Menu animated={false} background="rgb(0,0,0)" items={[settingsMenu]} />
-  const infoSwiperMenu = <Menu animated={false} background="rgb(0,0,0)" items={[infoMenu]} />
-  const statsSwiperMenu = <Menu animated={false} background="rgb(0,0,0)" items={[statsView]} />
-  const restartGameConfirmationMenu = <Menu animated={false} background="rgb(0,0,0)" items={[restartGameDialog]} />
+  const settingsMenu = <Menu animated={false} background="rgb(0,0,0)" items={[settingsComponent]} />
+  const infoMenu = <Menu animated={false} background="rgb(0,0,0)" items={[aboutComponent]} />
+  const statsMenu = <Menu animated={false} background="rgb(0,0,0)" items={[statsComponent]} />
+  const restartGameConfirmationMenu = <Menu animated={false} background="rgb(0,0,0)" items={[restartGameConfirmationComponent]} />
 
   const [audioElement, soundtrack, playSoundtrack] = useSound(
     [sounds],
@@ -120,7 +113,10 @@ const Tetris = () => {
     setBlocks({ I: 0, J: 0, L: 0, O: 0, S: 0, T: 0, Z: 0 });
   }
 
-  const startGame = async (playerUsername) => {
+  const startGame = (playerUsername) => {
+    // setHighscore(getHighscoreCookie());
+    // console.log('Start -> current highscore: ', highscore);
+
     resetGameStats();
     setUsername(playerUsername ? playerUsername : "");
     setDropTime(1000);
@@ -129,7 +125,7 @@ const Tetris = () => {
     setGameStarted(true);
     setPaused(false);
 
-    await playSoundtrack(0);
+    // TODO !!!! playSoundtrack(0);
     spawnPlayer();
 
     focusComponent(ROOT_COMPONENT_ID);
@@ -148,15 +144,16 @@ const Tetris = () => {
     setPaused(false);
   };
 
+  const currentHighscore = useMemo(() => readHighscoreCookie(), [gameStarted, gameOver]);
+
   const keyUpEventListener = useCallback(
     ({ keyCode }) => {
-      if (keyCode === 40) {
-        /*Arrow Down*/ if (gameOver || !gameStarted || paused) return;
+      if (keyCode === KEY_ARROW_DOWN) {
+        if (gameOver || !gameStarted || paused) return;
         setDropTime(1000 / (level + 1) + 200);
       }
 
-      /* Escape-Key-Handling */
-      if (keyCode === 27) {
+      if (keyCode === KEY_ESCAPE) {
         // If there is an Overlay, close the Overlay first
         if (overlayContent !== null) {
           closeOverlay();
@@ -173,11 +170,9 @@ const Tetris = () => {
           }
         }
       }
-      /* Start-Game-Menu Key-Handling */
-      if (!gameStarted) {
-        if (keyCode === 13) {
-          /*Enter*/ startGame(username);
-        }
+
+      if (!gameStarted && keyCode === KEY_ENTER) {
+        startGame(username);
       }
     },
     [gameOver, gameStarted, level, overlayContent, paused, username]
@@ -185,14 +180,14 @@ const Tetris = () => {
 
   const keyDown = ({ keyCode }) => {
     if (!gameOver && !paused && gameStarted) {
-      if (keyCode === 37) {
-        /*Arrow Left*/ movePlayer(-1);
-      } else if (keyCode === 39) {
-        /*Arrow Right*/ movePlayer(1);
-      } else if (keyCode === 40) {
-        /*Arrow Down*/ dropPlayer();
-      } else if (keyCode === 38) {
-        /*Arrow Up*/ rotatePlayerIfNotColliding(stage, 1);
+      if (keyCode === KEY_ARROW_LEFT) {
+        movePlayer(-1);
+      } else if (keyCode === KEY_ARROW_RIGHT) {
+        movePlayer(1);
+      } else if (keyCode === KEY_ARROW_DOWN) {
+        dropPlayer();
+      } else if (keyCode === KEY_ARROW_UP) {
+        rotatePlayerIfNotColliding(stage, 1);
       }
     }
   };
@@ -231,12 +226,17 @@ const Tetris = () => {
       updatePlayerPos({ x: 0, y: 1, collided: false });
     } else {
       // Game Over
-      if (player.pos.y < 1 && !player.droppingTillCollision) {
+      if (player.pos.y < 1) {
+        if (score > currentHighscore.highscore) {
+          saveHighscoreCookie(username, score, new Date());
+        }
+        console.log('Game over because y < 1');
+
         setGameOver(true);
         setDropTime(null);
         return;
       }
-      updatePlayerPos({ x: 0, y: 0, collided: true, droppingTillCollision: false });
+      updatePlayerPos({ x: 0, y: 0, collided: true });
     }
   };
 
@@ -246,8 +246,7 @@ const Tetris = () => {
   };
 
   const dropPlayerUntilCollided = () => {
-    setPlayer({ ...player, droppingTillCollision: true });
-    setDropTime(25);
+    setDropTime(10);
   };
 
   const rotatePlayer = (playerMatrix, direction) => {
@@ -279,11 +278,10 @@ const Tetris = () => {
         return;
       }
     }
-
     setPlayer(playerClone);
   };
 
-  const updatePlayerPos = ({ x, y, collided, droppingTillCollision }) => {
+  const updatePlayerPos = ({ x, y, collided }) => {
     setPlayer((prev) => ({
       ...prev,
       pos: {
@@ -314,10 +312,7 @@ const Tetris = () => {
         if (row.findIndex((cell) => cell[0] === CellType.EMPTY) === -1) {
           setCurrentRowsCleared((prev) => prev + 1);
           ack.unshift(
-            Array(newStage[0].length).fill([
-              CellType.EMPTY,
-              CellStatus.CLEAR,
-            ])
+            Array(newStage[0].length).fill([CellType.EMPTY, CellStatus.CLEAR])
           );
           return ack;
         }
@@ -330,9 +325,7 @@ const Tetris = () => {
       // Flush the stage before
       const newStage = prevStage.map((row) =>
         row.map((cell) =>
-          cell[1] === CellStatus.CLEAR
-            ? [CellType.EMPTY, CellStatus.CLEAR]
-            : cell
+          cell[1] === CellStatus.CLEAR ? [CellType.EMPTY, CellStatus.CLEAR] : cell
         )
       );
 
@@ -360,6 +353,9 @@ const Tetris = () => {
         return sweepRows(newStage);
       }
       if (checkCollision(player, stage, { x: 0, y: 0 })) {
+        if (score > currentHighscore.highscore) {
+          saveHighscoreCookie(username, score, new Date());
+        }
         setGameOver(true);
       }
       return newStage;
@@ -369,7 +365,7 @@ const Tetris = () => {
   }, [player, spawnPlayer]);
 
   const openSettingsOverlay = () => {
-    setOverlayContent(settingsSwiperMenu);
+    setOverlayContent(settingsMenu);
   };
 
   return (
@@ -402,7 +398,7 @@ const Tetris = () => {
               items={[
                 <TextOutput
                   key="start-game-menu"
-                  animationColor="Fade"
+                  animationColor={COLOR_FADE}
                   text="REKTRIS"
                   fontFamily="Exo 2"
                   fontSize="7rem"
@@ -418,7 +414,7 @@ const Tetris = () => {
                   }}
                 >
                   <TextOutput
-                    animationColor="White"
+                    animationColor={COLOR_WHITE}
                     text="PLEASE ENTER YOUR USERNAME"
                     fontSize="1.6rem"
                     fontFamily="Exo 2"
@@ -448,7 +444,6 @@ const Tetris = () => {
                     iconUrl={SettingsIcon}
                     iconWidth="1.9rem"
                     iconHeight="1.9rem"
-                    fontFamily="Exo 2"
                     padding="0 0 0.2rem 0"
                     callback={() => openSettingsOverlay()}
                   />
@@ -459,7 +454,7 @@ const Tetris = () => {
                     iconHeight="2.2rem"
                     fontFamily="Exo 2"
                     padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(infoSwiperMenu)}
+                    callback={() => setOverlayContent(infoMenu)}
                   />
                 </div>,
               ]}
@@ -476,7 +471,7 @@ const Tetris = () => {
               overflow: "hidden",
             }}
           >
-            <TetrisBackground animated={false}/>
+            <TetrisBackground animated={false} />
             <BlurryBackground />
             <Menu
               animated
@@ -485,19 +480,39 @@ const Tetris = () => {
               items={[
                 <div key="game-over-menu-outputs" className="game-over-container">
                   <TextOutput
-                    animationColor="Fade"
+                    animationColor={COLOR_FADE}
                     text="GAME OVER"
                     fontFamily="Exo 2"
                     fontSize="7rem"
                     whiteSpace="wrap"
                   />
-                  <TextOutput
-                    animationColor="Fade"
-                    text={`SCORE: ${score}`}
-                    fontFamily="Exo 2"
-                    fontSize="1.8rem"
-                    whiteSpace="wrap"
-                  />
+
+                  {score < currentHighscore.highscore && (
+                    <TextOutput
+                      animationColor={COLOR_FADE}
+                      text={`NEW HIGHSCORE: ${score}`}
+                      fontFamily="Exo 2"
+                      fontSize="1.8rem"
+                      whiteSpace="wrap"
+                    />)}
+
+                  {score >= currentHighscore.highscore && (
+                    <>
+                      <TextOutput
+                        animationColor={COLOR_FADE}
+                        text={`SCORE: ${score}`}
+                        fontFamily="Exo 2"
+                        fontSize="1.8rem"
+                        whiteSpace="wrap"
+                      />
+                      <TextOutput
+                        animationColor={COLOR_FADE}
+                        text={`HIGHSCORE: ${currentHighscore.highscore}`}
+                        fontFamily="Exo 2"
+                        fontSize="1.8rem"
+                        whiteSpace="wrap"
+                      />
+                    </>)}
                 </div>,
                 <div
                   key="game-over-menu-controls"
@@ -525,7 +540,7 @@ const Tetris = () => {
                     iconHeight="2.4rem"
                     fontFamily="Exo 2"
                     padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(statsSwiperMenu)}
+                    callback={() => setOverlayContent(statsMenu)}
                   />
                   <AltButton
                     text="SETTINGS"
@@ -543,7 +558,7 @@ const Tetris = () => {
                     iconHeight="2.2rem"
                     fontFamily="Exo 2"
                     padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(infoSwiperMenu)}
+                    callback={() => setOverlayContent(infoMenu)}
                   />
                   <AltButton
                     text="EXIT"
@@ -577,7 +592,7 @@ const Tetris = () => {
               items={[
                 <TextOutput
                   key="pause-menu-outputs"
-                  animationColor="Fade"
+                  animationColor={COLOR_FADE}
                   text="REKTRIS"
                   fontFamily="Exo 2"
                   fontSize="7rem"
@@ -608,7 +623,7 @@ const Tetris = () => {
                     iconHeight="2.4rem"
                     fontFamily="Exo 2"
                     padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(statsSwiperMenu)}
+                    callback={() => setOverlayContent(statsMenu)}
                   />
                   <AltButton
                     text="SETTINGS"
@@ -635,7 +650,7 @@ const Tetris = () => {
                     iconHeight="2.2rem"
                     fontFamily="Exo 2"
                     padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(infoSwiperMenu)}
+                    callback={() => setOverlayContent(infoMenu)}
                   />
                   <AltButton
                     text="EXIT"
@@ -658,19 +673,19 @@ const Tetris = () => {
           <>
             <div className="game-stats-container">
               <TextOutput
-                animationColor={tetrisTextAnimationColor}
+                animationColor={textColor}
                 text={`SCORE: ${score}`}
                 fontFamily="Exo 2"
                 fontSize="1.8rem"
               />
               <TextOutput
-                animationColor={tetrisTextAnimationColor}
+                animationColor={textColor}
                 text={`LEVEL: ${level + 1}`}
                 fontFamily="Exo 2"
                 fontSize="1.8rem"
               />
               <TextOutput
-                animationColor={tetrisTextAnimationColor}
+                animationColor={textColor}
                 text={`${formatMillisecondsToHHMMSS(timePlayed)}`}
                 fontFamily="Exo 2"
                 fontSize="1.8rem"
@@ -679,11 +694,13 @@ const Tetris = () => {
             <Stage
               animatedColor
               stage={stage}
-              cellSize={tetrisCellSideLength}
-              gridAnimationColor={tetrisGridAnimationColor}
+              cellSize={gridCellSideLength}
+              gridAnimationColor={gridColor}
             />
             <div className="game-controller-container">
-              <Button borderRadius="50%"><StatsIconComponent width="2.5rem" height="auto" /></Button>
+              <Button borderRadius="50%">
+                <StatsIconComponent width="2.5rem" height="auto" />
+              </Button>
               <div className="game-controller">
                 <Button
                   width="3rem"
@@ -699,7 +716,7 @@ const Tetris = () => {
                   borderRadius="50%"
                   callback={() => {
                     dropPlayer();
-                    keyUpEventListener({ keyCode: 40 });
+                    keyUpEventListener({ keyCode: KEY_ARROW_DOWN });
                   }}
                 ><ArrowIconComponent
                     width="2.5rem"
@@ -715,7 +732,7 @@ const Tetris = () => {
                   width="3rem"
                   borderRadius="50%"
                   callback={dropPlayerUntilCollided}
-                ></Button>
+                ><DropIconComponent width="2.5rem" height="auto" style={{ transform: 'rotate(180deg)' }} /></Button>
                 <Button
                   width="3rem"
                   borderRadius="50%"

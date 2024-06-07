@@ -1,6 +1,6 @@
 import { StyledButton } from "./styles/StyledButton";
 
-const Button = ({ children, width, height, borderRadius, background, color, fontFamily, fontSize, callback }) => (
+const Button = ({ children, width, height, borderRadius, background, color, fontFamily, fontWeight, fontSize, callback }) => (
     <StyledButton
         width={width}
         height={height}
@@ -8,6 +8,7 @@ const Button = ({ children, width, height, borderRadius, background, color, font
         background={background}
         color={color}
         fontFamily={fontFamily}
+        fontWeight={fontWeight}
         fontSize={fontSize}
         onClick={callback}
     >{children}</StyledButton>

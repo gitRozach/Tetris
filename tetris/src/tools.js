@@ -18,6 +18,16 @@ export const CellType = {
   Z: "Z"
 };
 
+export const formatDateDDMMYYYY = (date) => {
+  const currentDate = new Date(date);
+  let day = currentDate.getDate();
+  let month = currentDate.getMonth() + 1;
+  let year = currentDate.getFullYear();
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+  return [day, month, year].join('.');
+}
+
 export const createStage = () =>
   Array.from(Array(STAGE_HEIGHT), () =>
     Array(STAGE_WIDTH).fill([CellType.EMPTY, CellStatus.CLEAR])

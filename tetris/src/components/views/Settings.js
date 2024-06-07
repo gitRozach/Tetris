@@ -68,67 +68,37 @@ const Settings = () => {
     tetrisGridAnimationColorValue, 
     setTetrisGridAnimationColorValue, 
     tetrisGridAnimationColorComponent
-  ] = TextSelect(['Blue', 'Fade', 'None'], 'Blue', changeTetrisGridColorAnimation);
+  ] = TextSelect(['BLUE', 'FADE', 'NONE'], 'FADE', changeTetrisGridColorAnimation);
 
   const [
     tetrisTextAnimationColorValue, 
     setTetrisTextAnimationColorValue, 
     tetrisTextAnimationColorComponent
-  ] = TextSelect(['White', 'Blue', 'Fade'], 'White', changeTetrisTextColorAnimation);
+  ] = TextSelect(['WHITE', 'BLUE', 'FADE'], 'FADE', changeTetrisTextColorAnimation);
 
+  const settingsTextH3Properties = {
+    color: "white",
+    padding: "0 0 0 50px",
+    margin: "0",
+    justifySelf: "start",
+  }
 
   return [
     soundtrackVolume,
     tetrisCellSideLength,
     tetrisGridAnimationColor,
     tetrisTextAnimationColor,
-    <GridBox key="settings-grid">
-      <h3
-        style={{
-          color: "white",
-          padding: "0 0 0 50px",
-          margin: "0",
-          justifySelf: "start",
-        }}
-      >
-        Soundtrack Volume
-      </h3>
+    <GridBox key="settings-component-container">
+      <h3 style={settingsTextH3Properties}>Soundtrack Volume</h3>
       {soundtrackVolumeComponent}
 
-      <h3
-        style={{
-          color: "white",
-          padding: "0 0 0 50px",
-          margin: "0",
-          justifySelf: "start",
-        }}
-      >
-        Grid Size
-      </h3>
+      <h3 style={settingsTextH3Properties}>Grid Size</h3>
       {tetrisCellSideLengthComponent}
 
-      <h3
-        style={{
-          color: "white",
-          padding: "0 0 0 50px",
-          margin: "0",
-          justifySelf: "start",
-        }}
-      >
-        Grid Color
-      </h3>
+      <h3 style={settingsTextH3Properties}>Grid Color</h3>
       {tetrisGridAnimationColorComponent}
 
-      <h3
-        style={{
-          color: "white",
-          padding: "0 0 0 50px",
-          margin: "0",
-          justifySelf: "start",
-        }}
-      >
-        Text Color
-      </h3>
+      <h3 style={settingsTextH3Properties}>Text Color</h3>
       {tetrisTextAnimationColorComponent}
     </GridBox>
   ];
