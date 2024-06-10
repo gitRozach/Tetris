@@ -2,6 +2,7 @@
 import sounds from "../../soundtracks/Tetris_Soundtrack_1.mp3";
 
 // Views
+import Statistics from "../views/Statistics";
 import Settings from "../views/Settings";
 import Info from "../views/Info";
 
@@ -37,6 +38,7 @@ import { StyledTetrisWrapper, StyledTetris } from "./styles/StyledTetris";
 import { useState, useEffect, useCallback } from "react";
 import { useInterval } from "../../hooks/useInterval";
 import { useGameStatus as usePlayerProgress } from "../../hooks/usePlayerProgress";
+import { usePlayerHighscore } from "../../hooks/usePlayerHighscore";
 import { useSound } from "../../hooks/useSound";
 
 // Utils
@@ -46,31 +48,29 @@ import {
   formatMillisecondsToHHMMSS,
   STAGE_WIDTH,
   focusComponent,
-  ROOT_COMPONENT_ID,
-} from "../../tools";
-import {
   TETROMINOS,
-  randomTetromino,
   randomTetrominoType,
   tetrominoByName,
+  calculatePlayerDropTime,
+  ROOT_COMPONENT_ID,
+  CellStatus,
+  CellType
 } from "../../tools";
-import Statistics from "../views/Statistics";
-import { CellStatus, CellType } from "../../tools";
-import { usePlayerHighscore } from "../../hooks/usePlayerHighscore";
+
+// Constants
 import { COLOR_FADE, COLOR_WHITE } from "../../constants/settingsConstants";
 import { KEY_ENTER, KEY_ARROW_DOWN, KEY_ARROW_LEFT, KEY_ARROW_RIGHT, KEY_ARROW_UP, KEY_ESCAPE } from "../../constants/keycodeConstants";
 
 const Tetris = () => {
-
-  const [overlayContent, setOverlayContent] = useState(null);
-  const closeOverlay = () => setOverlayContent(null);
-
   const [player, setPlayer] = useState({
     pos: { x: 0, y: 0 },
     name: TETROMINOS[0].name,
     tetromino: TETROMINOS[0].shape,
     collided: false,
   });
+
+  const [overlayContent, setOverlayContent] = useState(null);
+  const closeOverlay = () => setOverlayContent(null);
 
   const [currentRowsCleared, setCurrentRowsCleared] = useState(0);
   const [readHighscoreCookie, saveHighscoreCookie] = usePlayerHighscore();
@@ -81,14 +81,6 @@ const Tetris = () => {
   const [gameOver, setGameOver] = useState(false);
   const [paused, setPaused] = useState(false);
   const [stage, setStage] = useState(createStage());
-
-  const usernameInput = TextInput({
-    id: "usernameInput",
-    text: username,
-    fontFamily: "Exo 2",
-    fontSize: "1.6rem",
-    onChange: (value) => setUsername(value),
-  });
 
   const [soundtrackVolume, gridCellSideLength, gridColor, textColor, settingsComponent] = Settings();
   const aboutComponent = Info();
@@ -105,6 +97,41 @@ const Tetris = () => {
     soundtrackVolume
   );
 
+  const usernameInput = TextInput({
+    id: "usernameInput",
+    text: username,
+    fontFamily: "Exo 2",
+    fontSize: "1.6rem",
+    onChange: (value) => setUsername(value),
+  });
+
+  const gameControllerButtonProps = {
+    width: "3rem",
+    height: "3rem",
+    borderRadius: "50%"
+  }
+
+  const createAltButtonProps = (text, icon, iconWidth, iconHeight, callback) => {
+    return {
+      text: text,
+      iconUrl: icon,
+      iconWidth: iconWidth,
+      iconHeight: iconHeight,
+      fontFamily: "Exo 2",
+      padding: "0 0 0.2rem 0",
+      callback: callback
+    };
+  }
+
+  const createTextOutputProps = (text, color, fontSize) => {
+    return {
+      animationColor: color,
+      text: text,
+      fontFamily: "Exo 2",
+      fontSize: fontSize
+    }
+  }
+
   const resetGameStats = () => {
     setTimePlayed(0);
     setScore(0);
@@ -114,20 +141,16 @@ const Tetris = () => {
   }
 
   const startGame = (playerUsername) => {
-    // setHighscore(getHighscoreCookie());
-    // console.log('Start -> current highscore: ', highscore);
-
     resetGameStats();
     setUsername(playerUsername ? playerUsername : "");
-    setDropTime(1000);
+    // setDropTime(1000);
+    setDropTime(10000000);
     setStage(createStage());
     setGameOver(false);
     setGameStarted(true);
     setPaused(false);
-
     // TODO !!!! playSoundtrack(0);
     spawnPlayer();
-
     focusComponent(ROOT_COMPONENT_ID);
   };
 
@@ -150,7 +173,7 @@ const Tetris = () => {
     ({ keyCode }) => {
       if (keyCode === KEY_ARROW_DOWN) {
         if (gameOver || !gameStarted || paused) return;
-        setDropTime(1000 / (level + 1) + 200);
+        setDropTime(calculatePlayerDropTime(level));
       }
 
       if (keyCode === KEY_ESCAPE) {
@@ -162,23 +185,18 @@ const Tetris = () => {
           if (paused) {
             // Close the pause menu if there is no overlay showing
             setPaused(false);
-            if (gameStarted) {
-              focusComponent(ROOT_COMPONENT_ID);
-            }
+            if (gameStarted) focusComponent(ROOT_COMPONENT_ID);
           } else {
             setPaused(true);
           }
         }
       }
-
-      if (!gameStarted && keyCode === KEY_ENTER) {
-        startGame(username);
-      }
+      if (!gameStarted && keyCode === KEY_ENTER) startGame(username);
     },
     [gameOver, gameStarted, level, overlayContent, paused, username]
   );
 
-  const keyDown = ({ keyCode }) => {
+  const handleKeyDownEvent = ({ keyCode }) => {
     if (!gameOver && !paused && gameStarted) {
       if (keyCode === KEY_ARROW_LEFT) {
         movePlayer(-1);
@@ -195,8 +213,7 @@ const Tetris = () => {
   useEffect(() => {
     const keyupEventListenerName = "keyup";
     window.addEventListener(keyupEventListenerName, keyUpEventListener);
-    return () =>
-      window.removeEventListener(keyupEventListenerName, keyUpEventListener);
+    return () => window.removeEventListener(keyupEventListenerName, keyUpEventListener);
   }, [keyUpEventListener]);
 
   useInterval(() => {
@@ -210,28 +227,21 @@ const Tetris = () => {
   }, 1000);
 
   const movePlayer = (directionX) => {
-    if (!checkCollision(player, stage, { x: directionX, y: 0 })) {
-      updatePlayerPos({ x: directionX, y: 0 });
-    }
+    if (!checkCollision(player, stage, { x: directionX, y: 0 })) updatePlayerPos({ x: directionX, y: 0 });
   };
 
   const drop = () => {
     // Increase level and reduce drop time after each 10 rows
     if (rows >= (level + 1) * 10) {
       setLevel((prev) => prev + 1);
-      setDropTime(1000 / (level + 1) + 200);
+      setDropTime(calculatePlayerDropTime(level));
     }
-
     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
       updatePlayerPos({ x: 0, y: 1, collided: false });
     } else {
       // Game Over
       if (player.pos.y < 1) {
-        if (score > currentHighscore.highscore) {
-          saveHighscoreCookie(username, score, new Date());
-        }
-        console.log('Game over because y < 1');
-
+        if (score > currentHighscore.highscore) saveHighscoreCookie(username, score, new Date());
         setGameOver(true);
         setDropTime(null);
         return;
@@ -251,9 +261,7 @@ const Tetris = () => {
 
   const rotatePlayer = (playerMatrix, direction) => {
     // Rotate the rows so the rows are columns (transponse)
-    const rotatedTetro = playerMatrix.map((_, index) =>
-      playerMatrix.map((col) => col[index])
-    );
+    const rotatedTetro = playerMatrix.map((_, index) => playerMatrix.map((col) => col[index]));
     // Reverse each row to get a rotated matrix
     if (direction > 0) return rotatedTetro.map((row) => row.reverse());
     return rotatedTetro.reverse();
@@ -262,7 +270,6 @@ const Tetris = () => {
   const rotatePlayerIfNotColliding = (stage, direction) => {
     const playerClone = JSON.parse(JSON.stringify(player));
     playerClone.tetromino = rotatePlayer(playerClone.tetromino, direction);
-
     const position = playerClone.pos.x;
     let offset = 1;
 
@@ -311,9 +318,7 @@ const Tetris = () => {
         // If a row does not contain any empty cells, clear the row
         if (row.findIndex((cell) => cell[0] === CellType.EMPTY) === -1) {
           setCurrentRowsCleared((prev) => prev + 1);
-          ack.unshift(
-            Array(newStage[0].length).fill([CellType.EMPTY, CellStatus.CLEAR])
-          );
+          ack.unshift(Array(newStage[0].length).fill([CellType.EMPTY, CellStatus.CLEAR]));
           return ack;
         }
         ack.push(row);
@@ -324,19 +329,14 @@ const Tetris = () => {
     const updateStage = (prevStage) => {
       // Flush the stage before
       const newStage = prevStage.map((row) =>
-        row.map((cell) =>
-          cell[1] === CellStatus.CLEAR ? [CellType.EMPTY, CellStatus.CLEAR] : cell
-        )
+        row.map((cell) => cell[1] === CellStatus.CLEAR ? [CellType.EMPTY, CellStatus.CLEAR] : cell)
       );
 
       // Draw the tetromino
       player.tetromino.forEach((row, y) => {
         row.forEach((value, x) => {
           if (value !== CellType.EMPTY) {
-            newStage[y + player.pos.y][x + player.pos.x] = [
-              value,
-              `${player.collided ? CellStatus.MERGED : CellStatus.CLEAR}`,
-            ];
+            newStage[y + player.pos.y][x + player.pos.x] = [value, `${player.collided ? CellStatus.MERGED : CellStatus.CLEAR}`];
           }
         });
       });
@@ -348,14 +348,12 @@ const Tetris = () => {
         setBlocks(newBlocks);
 
         // Reset fast drop if collided
-        setDropTime(rows >= 10 ? 1000 / (level + 1) + 200 : 1000);
+        setDropTime(rows >= 10 ? calculatePlayerDropTime(level) : 1000);
         spawnPlayer();
         return sweepRows(newStage);
       }
       if (checkCollision(player, stage, { x: 0, y: 0 })) {
-        if (score > currentHighscore.highscore) {
-          saveHighscoreCookie(username, score, new Date());
-        }
+        if (score > currentHighscore.highscore) saveHighscoreCookie(username, score, new Date());
         setGameOver(true);
       }
       return newStage;
@@ -373,7 +371,7 @@ const Tetris = () => {
       id="tetris-wrapper"
       role="button"
       tabIndex="0"
-      onKeyDown={(e) => keyDown(e)}
+      onKeyDown={(e) => handleKeyDownEvent(e)}
     >
       <StyledTetris>
         {audioElement}
@@ -389,20 +387,14 @@ const Tetris = () => {
           >
             <TetrisBackground animated={false} />
             <BlurryBackground
-              blurColor={"rgba(0, 0, 0, 0.4)"}
+              blurColor="rgba(0, 0, 0, 0.4)"
               blurRadius="15px"
             />
             <Menu
               animated={false}
               keyPressedHandler={keyUpEventListener}
               items={[
-                <TextOutput
-                  key="start-game-menu"
-                  animationColor={COLOR_FADE}
-                  text="REKTRIS"
-                  fontFamily="Exo 2"
-                  fontSize="7rem"
-                />,
+                <TextOutput key="start-game-menu" {...createTextOutputProps("REKTRIS", COLOR_FADE, "7rem")} />,
                 <div
                   key="start-game-menu-username-input"
                   style={{
@@ -413,12 +405,7 @@ const Tetris = () => {
                     padding: "0 1rem",
                   }}
                 >
-                  <TextOutput
-                    animationColor={COLOR_WHITE}
-                    text="PLEASE ENTER YOUR USERNAME"
-                    fontSize="1.6rem"
-                    fontFamily="Exo 2"
-                  />
+                  <TextOutput {...createTextOutputProps("PLEASE ENTER YOUR USERNAME", COLOR_WHITE, "1.6rem")} />
                   {usernameInput}
                 </div>,
                 <div key="start-game-menu-controls"
@@ -430,32 +417,9 @@ const Tetris = () => {
                     padding: "0 1rem",
                   }}
                 >
-                  <AltButton
-                    text="START"
-                    iconUrl={PlayIcon}
-                    iconWidth="2.2rem"
-                    iconHeight="2.2rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => startGame(username)}
-                  />
-                  <AltButton
-                    text="SETTINGS"
-                    iconUrl={SettingsIcon}
-                    iconWidth="1.9rem"
-                    iconHeight="1.9rem"
-                    padding="0 0 0.2rem 0"
-                    callback={() => openSettingsOverlay()}
-                  />
-                  <AltButton
-                    text="ABOUT"
-                    iconUrl={InfoIcon}
-                    iconWidth="2.2rem"
-                    iconHeight="2.2rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(infoMenu)}
-                  />
+                  <AltButton {...createAltButtonProps("START", PlayIcon, "2.2rem", "2.2rem", () => startGame(username))} />
+                  <AltButton {...createAltButtonProps("SETTINGS", SettingsIcon, "1.9rem", "1.9rem", () => openSettingsOverlay())} />
+                  <AltButton {...createAltButtonProps("ABOUT", InfoIcon, "2.2rem", "2.2rem", () => setOverlayContent(infoMenu))} />
                 </div>,
               ]}
             />
@@ -479,40 +443,16 @@ const Tetris = () => {
               background="rgba(0, 0, 0, 0.8)"
               items={[
                 <div key="game-over-menu-outputs" className="game-over-container">
-                  <TextOutput
-                    animationColor={COLOR_FADE}
-                    text="GAME OVER"
-                    fontFamily="Exo 2"
-                    fontSize="7rem"
-                    whiteSpace="wrap"
-                  />
+                  <TextOutput {...createTextOutputProps("GAME OVER", COLOR_FADE, "7rem")} whiteSpace="wrap" />
 
-                  {score < currentHighscore.highscore && (
-                    <TextOutput
-                      animationColor={COLOR_FADE}
-                      text={`NEW HIGHSCORE: ${score}`}
-                      fontFamily="Exo 2"
-                      fontSize="1.8rem"
-                      whiteSpace="wrap"
-                    />)}
+                  {score >= currentHighscore.highscore && score > 0 && (
+                    <TextOutput {...createTextOutputProps(`NEW HIGHSCORE: ${score}`, COLOR_FADE, "1.8rem")} whiteSpace="wrap" />
+                  )}
 
-                  {score >= currentHighscore.highscore && (
-                    <>
-                      <TextOutput
-                        animationColor={COLOR_FADE}
-                        text={`SCORE: ${score}`}
-                        fontFamily="Exo 2"
-                        fontSize="1.8rem"
-                        whiteSpace="wrap"
-                      />
-                      <TextOutput
-                        animationColor={COLOR_FADE}
-                        text={`HIGHSCORE: ${currentHighscore.highscore}`}
-                        fontFamily="Exo 2"
-                        fontSize="1.8rem"
-                        whiteSpace="wrap"
-                      />
-                    </>)}
+                  {score < currentHighscore.highscore || score === 0 && (
+                    <TextOutput {...createTextOutputProps(`SCORE: ${score}`, COLOR_FADE, "1.8rem")} whiteSpace="wrap" />
+                  )}
+
                 </div>,
                 <div
                   key="game-over-menu-controls"
@@ -524,52 +464,12 @@ const Tetris = () => {
                     padding: "0 1rem",
                   }}
                 >
-                  <AltButton
-                    text="RESTART"
-                    iconUrl={RestartIcon}
-                    iconWidth="1.7rem"
-                    iconHeight="1.7rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => startGame(username)}
-                  />
-                  <AltButton
-                    text="STATISTICS"
-                    iconUrl={StatsIcon}
-                    iconWidth="2.4rem"
-                    iconHeight="2.4rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(statsMenu)}
-                  />
-                  <AltButton
-                    text="SETTINGS"
-                    iconUrl={SettingsIcon}
-                    iconWidth="1.9rem"
-                    iconHeight="1.9rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={openSettingsOverlay}
-                  />
-                  <AltButton
-                    text="ABOUT"
-                    iconUrl={InfoIcon}
-                    iconWidth="2.2rem"
-                    iconHeight="2.2rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(infoMenu)}
-                  />
-                  <AltButton
-                    text="EXIT"
-                    iconUrl={CloseIcon}
-                    iconWidth="3rem"
-                    iconHeight="3rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={exitGame}
-                  />
-                </div>,
+                  <AltButton {...createAltButtonProps("RESTART", RestartIcon, "1.7rem", "1.7rem", () => startGame(username))} />
+                  <AltButton {...createAltButtonProps("STATISTICS", StatsIcon, "2.4rem", "2.4rem", () => setOverlayContent(statsMenu))} />
+                  <AltButton {...createAltButtonProps("SETTINGS", SettingsIcon, "1.9rem", "1.9rem", openSettingsOverlay)} />
+                  <AltButton {...createAltButtonProps("ABOUT", InfoIcon, "2.2rem", "2.2rem", () => setOverlayContent(infoMenu))} />
+                  <AltButton {...createAltButtonProps("EXIT", CloseIcon, "3rem", "3rem", exitGame)} />
+                </div>
               ]}
             />
           </div>
@@ -581,7 +481,7 @@ const Tetris = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              overflow: "hidden",
+              overflow: "hidden"
             }}
           >
             <TetrisBackground animated={false} />
@@ -590,13 +490,7 @@ const Tetris = () => {
               animated={false}
               keyPressedHandler={keyUpEventListener}
               items={[
-                <TextOutput
-                  key="pause-menu-outputs"
-                  animationColor={COLOR_FADE}
-                  text="REKTRIS"
-                  fontFamily="Exo 2"
-                  fontSize="7rem"
-                />,
+                <TextOutput key="pause-menu-outputs" {...createTextOutputProps("REKTRIS", COLOR_FADE, "7rem")} />,
                 <div
                   key="pause-menu-controls"
                   style={{
@@ -607,60 +501,12 @@ const Tetris = () => {
                     padding: "0 1rem",
                   }}
                 >
-                  <AltButton
-                    text="RESUME"
-                    iconUrl={PlayIcon}
-                    iconWidth="2.2rem"
-                    iconHeight="2.2rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={resumeGame}
-                  />
-                  <AltButton
-                    text="STATISTICS"
-                    iconUrl={StatsIcon}
-                    iconWidth="2.4rem"
-                    iconHeight="2.4rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(statsMenu)}
-                  />
-                  <AltButton
-                    text="SETTINGS"
-                    iconUrl={SettingsIcon}
-                    iconWidth="1.9rem"
-                    iconHeight="1.9rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={openSettingsOverlay}
-                  />
-                  <AltButton
-                    text="RESTART"
-                    iconUrl={RestartIcon}
-                    iconWidth="1.7rem"
-                    iconHeight="1.7rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(restartGameConfirmationMenu)}
-                  />
-                  <AltButton
-                    text="ABOUT"
-                    iconUrl={InfoIcon}
-                    iconWidth="2.2rem"
-                    iconHeight="2.2rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={() => setOverlayContent(infoMenu)}
-                  />
-                  <AltButton
-                    text="EXIT"
-                    iconUrl={CloseIcon}
-                    iconWidth="2.2rem"
-                    iconHeight="2.2rem"
-                    fontFamily="Exo 2"
-                    padding="0 0 0.2rem 0"
-                    callback={exitGame}
-                  />
+                  <AltButton {...createAltButtonProps("RESUME", PlayIcon, "2.2rem", "2.2rem", resumeGame)} />
+                  <AltButton {...createAltButtonProps("STATISTICS", StatsIcon, "2.4rem", "2.4rem", () => setOverlayContent(statsMenu))} />
+                  <AltButton {...createAltButtonProps("SETTINGS", SettingsIcon, "1.9rem", "1.9rem", openSettingsOverlay)} />
+                  <AltButton {...createAltButtonProps("RESTART", RestartIcon, "1.7rem", "1.7rem", () => setOverlayContent(restartGameConfirmationMenu))} />
+                  <AltButton {...createAltButtonProps("ABOUT", InfoIcon, "2.2rem", "2.2rem", () => setOverlayContent(infoMenu))} />
+                  <AltButton {...createAltButtonProps("EXIT", CloseIcon, "2.2rem", "2.2rem", exitGame)} />
                 </div>,
               ]}
             />
@@ -672,81 +518,26 @@ const Tetris = () => {
         {gameStarted && (
           <>
             <div className="game-stats-container">
-              <TextOutput
-                animationColor={textColor}
-                text={`SCORE: ${score}`}
-                fontFamily="Exo 2"
-                fontSize="1.8rem"
-              />
-              <TextOutput
-                animationColor={textColor}
-                text={`LEVEL: ${level + 1}`}
-                fontFamily="Exo 2"
-                fontSize="1.8rem"
-              />
-              <TextOutput
-                animationColor={textColor}
-                text={`${formatMillisecondsToHHMMSS(timePlayed)}`}
-                fontFamily="Exo 2"
-                fontSize="1.8rem"
-              />
+              <TextOutput {...createTextOutputProps(`SCORE: ${score}`, textColor, "1.8rem")} />
+              <TextOutput {...createTextOutputProps(`LEVEL: ${level + 1}`, textColor, "1.8rem")} />
+              <TextOutput {...createTextOutputProps(`${formatMillisecondsToHHMMSS(timePlayed)}`, textColor, "1.8rem")} />
             </div>
-            <Stage
-              animatedColor
-              stage={stage}
-              cellSize={gridCellSideLength}
-              gridAnimationColor={gridColor}
-            />
+            <Stage animatedColor stage={stage} cellSize={gridCellSideLength} gridAnimationColor={gridColor} />
             <div className="game-controller-container">
-              <Button borderRadius="50%">
-                <StatsIconComponent width="2.5rem" height="auto" />
-              </Button>
               <div className="game-controller">
-                <Button
-                  width="3rem"
-                  borderRadius="50%"
-                  callback={() => movePlayer(-1)}
-                ><ArrowIconComponent
-                    width="2rem"
-                    height="auto"
-                    style={{ transform: "rotate(0deg)" }}
-                  /></Button>
-                <Button
-                  width="3rem"
-                  borderRadius="50%"
-                  callback={() => {
-                    dropPlayer();
-                    keyUpEventListener({ keyCode: KEY_ARROW_DOWN });
-                  }}
-                ><ArrowIconComponent
-                    width="2.5rem"
-                    height="auto"
-                    style={{ transform: "rotate(270deg)" }}
-                  /></Button>
-                <Button
-                  width="3rem"
-                  borderRadius="50%"
-                  callback={() => rotatePlayerIfNotColliding(stage, 1)}
-                ><RotateIconComponent width="2.5rem" height="auto" /></Button>
-                <Button
-                  width="3rem"
-                  borderRadius="50%"
-                  callback={dropPlayerUntilCollided}
-                ><DropIconComponent width="2.5rem" height="auto" style={{ transform: 'rotate(180deg)' }} /></Button>
-                <Button
-                  width="3rem"
-                  borderRadius="50%"
-                  callback={() => movePlayer(1)}
-                ><ArrowIconComponent
-                    width="2.5rem"
-                    height="auto"
-                    style={{ transform: "rotate(180deg)" }}
-                  /></Button>
+                <Button id="game-controller-button-left" {...gameControllerButtonProps} callback={() => movePlayer(-1)}>
+                  <ArrowIconComponent width="2.5rem" height="auto" style={{ transform: "rotate(0deg)" }} />
+                </Button>
+                <Button id="game-controller-button-down" {...gameControllerButtonProps} callback={() => { dropPlayer(); keyUpEventListener({ keyCode: KEY_ARROW_DOWN }); }}>
+                  <ArrowIconComponent width="2.5rem" height="auto" style={{ transform: "rotate(270deg)" }} />
+                </Button>
+                <Button id="game-controller-button-rotate" {...gameControllerButtonProps} callback={() => rotatePlayerIfNotColliding(stage, 1)}>
+                  <RotateIconComponent width="2rem" height="auto" />
+                </Button>
+                <Button id="game-controller-button-right" {...gameControllerButtonProps} callback={() => movePlayer(1)}>
+                  <ArrowIconComponent width="2.5rem" height="auto" style={{ transform: "rotate(180deg)" }} />
+                </Button>
               </div>
-              <Button
-                borderRadius="50%"
-                callback={() => setPaused(true)}
-              ><MenuIconComponent width="2.5rem" height="auto" /></Button>
             </div>
           </>
         )}

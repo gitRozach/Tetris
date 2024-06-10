@@ -41,8 +41,8 @@ export const StyledMenu = styled.div`
 
         width: 100%;
         height: 100%;
-
-        padding: 0;
+        padding: 50px;
         margin: 0;
+        box-sizing: border-box;
     }
 `

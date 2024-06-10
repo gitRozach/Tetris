@@ -1,7 +1,8 @@
 import { StyledButton } from "./styles/StyledButton";
 
-const Button = ({ children, width, height, borderRadius, background, color, fontFamily, fontWeight, fontSize, callback }) => (
+const Button = ({ id, children, width, height, borderRadius, background, color, fontFamily, fontWeight, fontSize, callback }) => (
     <StyledButton
+        id={id}
         width={width}
         height={height}
         borderRadius={borderRadius}

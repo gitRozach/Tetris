@@ -1,3 +1,8 @@
+import styled from "styled-components";
+
+//TODO
+
+export const StyledInputSlider = styled.input`
 .slider {
     -webkit-appearance: none;
     /* Override default CSS styles */
@@ -49,3 +54,4 @@
     /* Cursor on hover */
     border-radius: 5px;
 }
+`

@@ -18,6 +18,10 @@ export const CellType = {
   Z: "Z"
 };
 
+export const calculatePlayerDropTime = (level) => {
+  return 1000 / (level + 1) + 200;
+}
+
 export const formatDateDDMMYYYY = (date) => {
   const currentDate = new Date(date);
   let day = currentDate.getDate();
