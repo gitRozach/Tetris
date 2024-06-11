@@ -117,6 +117,14 @@ const Tetris = () => {
     },
     closeOverlay
   );
+  const exitGameConfirmationComponent = ConfirmationDialog(
+    "EXIT GAME ?",
+    () => {
+      closeOverlay();
+      exitGame();
+    },
+    closeOverlay
+  );
 
   const settingsMenu = (
     <Menu
@@ -136,6 +144,13 @@ const Tetris = () => {
       animated={false}
       background="rgb(0,0,0)"
       items={[restartGameConfirmationComponent]}
+    />
+  );
+  const exitGameConfirmationMenu = (
+    <Menu
+      animated={false}
+      background={"rgba(22, 22, 22, 0.7)"}
+      items={[exitGameConfirmationComponent]}
     />
   );
 
@@ -195,7 +210,7 @@ const Tetris = () => {
     setBlocks({ I: 0, J: 0, L: 0, O: 0, S: 0, T: 0, Z: 0 });
   };
 
-  const startGame = (playerUsername) => {
+  function startGame(playerUsername) {
     resetGameStats();
     setUsername(playerUsername ? playerUsername : "");
     setDropTime(1000);
@@ -206,20 +221,20 @@ const Tetris = () => {
     // TODO !!!! playSoundtrack(0);
     spawnPlayer();
     focusComponent(ROOT_COMPONENT_ID);
-  };
+  }
 
-  const resumeGame = () => {
+  function resumeGame() {
     setPaused(false);
     focusComponent(ROOT_COMPONENT_ID);
-  };
+  }
 
-  const exitGame = () => {
+  function exitGame() {
     setTimePlayed(0);
     setBlocks({ I: 0, J: 0, L: 0, O: 0, S: 0, T: 0, Z: 0 });
     setGameOver(false);
     setGameStarted(false);
     setPaused(false);
-  };
+  }
 
   const currentHighscore = useMemo(
     () => readHighscoreCookie(),
@@ -642,7 +657,7 @@ const Tetris = () => {
                       CloseIcon,
                       "3rem",
                       "3rem",
-                      exitGame
+                      () => setOverlayContent(exitGameConfirmationMenu)
                     )}
                   />
                 </div>,
@@ -731,7 +746,7 @@ const Tetris = () => {
                       CloseIcon,
                       "2.2rem",
                       "2.2rem",
-                      exitGame
+                      () => setOverlayContent(exitGameConfirmationMenu)
                     )}
                   />
                 </div>,

@@ -15,22 +15,22 @@ export const CellType = {
   O: "O",
   S: "S",
   T: "T",
-  Z: "Z"
+  Z: "Z",
 };
 
 export const calculatePlayerDropTime = (level) => {
   return 1000 / (level + 1) + 200;
-}
+};
 
 export const formatDateDDMMYYYY = (date) => {
   const currentDate = new Date(date);
   let day = currentDate.getDate();
   let month = currentDate.getMonth() + 1;
   let year = currentDate.getFullYear();
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-  return [day, month, year].join('.');
-}
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
+  return [day, month, year].join(".");
+};
 
 export const createStage = () =>
   Array.from(Array(STAGE_HEIGHT), () =>
@@ -53,7 +53,7 @@ export const checkCollision = (player, stage, { x: moveX, y: moveY }) => {
           !stage[y + player.pos.y + moveY][x + player.pos.x + moveX] ||
           // 4. Check the cell we're moving is not set to 'clear'
           stage[y + player.pos.y + moveY][x + player.pos.x + moveX][1] !==
-          CellStatus.CLEAR
+            CellStatus.CLEAR
         ) {
           return true;
         }
@@ -141,8 +141,15 @@ export const TETROMINOS = {
 };
 
 export const randomTetrominoType = () => {
-  //const tetrominos = CellType.I + CellType.J + CellType.L + CellType.O + CellType.S + CellType.T + CellType.Z;
-  const tetrominos = "IJLOSTZ";
+  //const tetrominos =
+  const tetrominos =
+    CellType.I +
+    CellType.J +
+    CellType.L +
+    CellType.O +
+    CellType.S +
+    CellType.T +
+    CellType.Z;
   return tetrominos[Math.floor(Math.random() * tetrominos.length)];
 };
 
