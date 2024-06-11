@@ -143,24 +143,68 @@ const Tetris = () => {
     </>
   );
   const infoMenu = (
-    <Menu animated={false} background="rgb(0,0,0)" items={[aboutComponent]} />
+    <>
+      <TetrisBackground animated={false} zIndex={3} />
+      <BlurryBackground
+        blurColor="rgba(0, 0, 0, 0.4)"
+        blurRadius="15px"
+        zIndex={4}
+      />
+      <Menu
+        zIndex={5}
+        animated={false}
+        background="transparent"
+        items={[aboutComponent]}
+      />
+    </>
   );
   const statsMenu = (
-    <Menu animated={false} background="rgb(0,0,0)" items={[statsComponent]} />
+    <>
+      <TetrisBackground animated={false} zIndex={3} />
+      <BlurryBackground
+        blurColor="rgba(0, 0, 0, 0.4)"
+        blurRadius="15px"
+        zIndex={4}
+      />
+      <Menu
+        zIndex={5}
+        animated={false}
+        background="rgba(0,0,0,0.2)"
+        items={[statsComponent]}
+      />
+    </>
   );
   const restartGameConfirmationMenu = (
-    <Menu
-      animated={false}
-      background="rgb(0,0,0)"
-      items={[restartGameConfirmationComponent]}
-    />
+    <>
+      <TetrisBackground animated={false} zIndex={3} />
+      <BlurryBackground
+        blurColor="rgba(0, 0, 0, 0.4)"
+        blurRadius="15px"
+        zIndex={4}
+      />
+      <Menu
+        zIndex={5}
+        animated={false}
+        background="rgba(0,0,0,0.2)"
+        items={[restartGameConfirmationComponent]}
+      />
+    </>
   );
   const exitGameConfirmationMenu = (
-    <Menu
-      animated={false}
-      background={"rgba(22, 22, 22, 0.7)"}
-      items={[exitGameConfirmationComponent]}
-    />
+    <>
+      <TetrisBackground animated={false} zIndex={3} />
+      <BlurryBackground
+        blurColor="rgba(0, 0, 0, 0.4)"
+        blurRadius="15px"
+        zIndex={4}
+      />
+      <Menu
+        zIndex={5}
+        animated={false}
+        background={"rgba(22, 22, 22, 0.7)"}
+        items={[exitGameConfirmationComponent]}
+      />
+    </>
   );
 
   const [audioElement, soundtrack, playSoundtrack] = useSound(
