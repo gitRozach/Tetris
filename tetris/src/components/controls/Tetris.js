@@ -657,7 +657,7 @@ const Tetris = () => {
                       CloseIcon,
                       "3rem",
                       "3rem",
-                      () => setOverlayContent(exitGameConfirmationMenu)
+                      exitGame
                     )}
                   />
                 </div>,

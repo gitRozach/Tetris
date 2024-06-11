@@ -22,7 +22,7 @@
   height: 23px;
   background: rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 50%;
 }
 
 .slider::-moz-range-thumb {
@@ -30,5 +30,5 @@
   height: 23px;
   background: rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 50%;
 }/*# sourceMappingURL=InputSlider.css.map */
