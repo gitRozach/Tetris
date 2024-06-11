@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const StyledTextSelect = styled.select`
 
@@ -16,13 +16,14 @@ export const StyledTextSelect = styled.select`
     }
 
     > option {
-        background-color: red;
+        // background-color: rgb(255, 255, 255);
+        // color: rgb(0, 0, 0);
         margin: 0;
         border-radius: 0;
         font-family: 'Exo 2';
     }
 
-    > option:nth-last-child(1) * {
+    > option:nth-last-child(1) {
         background-color: green;
     }
 
@@ -46,4 +47,4 @@ export const StyledTextSelect = styled.select`
         border-bottom-right-radius: 5px;
     }
 }
-`
+`;

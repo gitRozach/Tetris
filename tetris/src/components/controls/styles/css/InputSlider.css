@@ -18,16 +18,16 @@
 ::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 23px;
-  height: 23px;
+  width: 30px;
+  height: 30px;
   background: rgba(0, 0, 0, 0.4);
   cursor: pointer;
   border-radius: 50%;
 }
 
 .slider::-moz-range-thumb {
-  width: 23px;
-  height: 23px;
+  width: 30px;
+  height: 30px;
   background: rgba(0, 0, 0, 0.4);
   cursor: pointer;
   border-radius: 50%;
