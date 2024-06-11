@@ -6,11 +6,12 @@ export const StyledTextInput = styled.input`
     border: none;
     background-color: #121821;
 
-    padding: ${props => props.padding ? props.padding : '1rem 0'};
+    padding: ${props => props.padding ? props.padding : '1rem'};
     margin: ${props => props.margin ? props.margin : '0'};
 
     width: 100%;
     height: auto;
+    max: 10;
 
     font-family: '${props => props.fontFamily ? props.fontFamily : 'Tahoma'}';
     font-size: ${props => props.fontSize ? props.fontSize : '1.6rem'};

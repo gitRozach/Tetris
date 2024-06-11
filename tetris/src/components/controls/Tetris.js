@@ -102,6 +102,7 @@ const Tetris = () => {
     text: username,
     fontFamily: "Exo 2",
     fontSize: "1.6rem",
+    padding: "1rem",
     onChange: (value) => setUsername(value),
   });
 
@@ -143,8 +144,7 @@ const Tetris = () => {
   const startGame = (playerUsername) => {
     resetGameStats();
     setUsername(playerUsername ? playerUsername : "");
-    // setDropTime(1000);
-    setDropTime(10000000);
+    setDropTime(1000);
     setStage(createStage());
     setGameOver(false);
     setGameStarted(true);
@@ -383,6 +383,7 @@ const Tetris = () => {
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
+              width: "100%"
             }}
           >
             <TetrisBackground animated={false} />
@@ -398,11 +399,12 @@ const Tetris = () => {
                 <div
                   key="start-game-menu-username-input"
                   style={{
-                    width: "max(400px, calc(50% - 2 * 1rem))",
+                    // width: "max(400px, calc(50% - 2 * 1rem))",
+                    width: "100%",
                     display: "flex",
                     flexDirection: "column",
                     rowGap: "1rem",
-                    padding: "0 1rem",
+                    padding: "1rem",
                   }}
                 >
                   <TextOutput {...createTextOutputProps("PLEASE ENTER YOUR USERNAME", COLOR_WHITE, "1.6rem")} />
@@ -410,11 +412,12 @@ const Tetris = () => {
                 </div>,
                 <div key="start-game-menu-controls"
                   style={{
-                    width: "max(400px, calc(50% - 2 * 1rem))",
+                    width: "100%",
+                    // width: "max(400px, calc(50% - 2 * 1rem))",
                     display: "flex",
                     flexDirection: "column",
                     rowGap: "1rem",
-                    padding: "0 1rem",
+                    padding: "1rem",
                   }}
                 >
                   <AltButton {...createAltButtonProps("START", PlayIcon, "2.2rem", "2.2rem", () => startGame(username))} />
