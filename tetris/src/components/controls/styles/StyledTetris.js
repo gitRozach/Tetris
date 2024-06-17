@@ -9,12 +9,6 @@ export const StyledTetrisWrapper = styled.div`
 `;
 
 export const StyledTetris = styled.div`
-  // * {
-  //     padding: 0;
-  //     margin: 0;
-  //     box-sizing: border-box;
-  // }
-
   display: flex;
 
   @media screen and (orientation: portrait) {
