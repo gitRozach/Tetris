@@ -55,6 +55,7 @@ import {
 } from "../../tetrominos";
 import Statistics from "../views/Statistics";
 import { CellStatus, CellType } from "./Cell";
+import { KEY_ARROW_DOWN, KEY_ARROW_LEFT, KEY_ARROW_UP, KEY_ARROW_RIGHT, KEY_ESCAPE, KEY_ENTER } from "../../constants/keycodeConstants";
 
 // import {
 //   KeyboardNavigatorBoard,
@@ -170,13 +171,13 @@ const Tetris = () => {
     ({ keyCode }) => {
       console.log("keyUp Callback called");
 
-      if (keyCode === 40) {
+      if (keyCode === KEY_ARROW_DOWN) {
         /*Arrow Down*/ if (gameOver || !gameStarted || paused) return;
         setDropTime(1000 / (level + 1) + 200);
       }
 
       /* Escape-Key-Handling */
-      if (keyCode === 27) {
+      if (keyCode === KEY_ESCAPE) {
         /*Escape*/ console.log("ESC pressed");
 
         // If there is an overlay, close the overlay first
@@ -197,7 +198,7 @@ const Tetris = () => {
       }
       /* Start-Game-Menu Key-Handling */
       if (!gameStarted) {
-        if (keyCode === 13) {
+        if (keyCode === KEY_ENTER) {
           /*Enter*/ 
           // startGame(username); -> Does not work if the input is focused (The fetching process for the media resource was aborted by the user agent at the user's request)
         }
@@ -209,13 +210,13 @@ const Tetris = () => {
 
   const keyDown = ({ keyCode }) => {
     if (!gameOver && !paused && gameStarted) {
-      if (keyCode === 37) {
+      if (keyCode === KEY_ARROW_LEFT) {
         /*Arrow Left*/ movePlayer(-1);
-      } else if (keyCode === 39) {
+      } else if (keyCode === KEY_ARROW_RIGHT) {
         /*Arrow Right*/ movePlayer(1);
-      } else if (keyCode === 40) {
+      } else if (keyCode === KEY_ARROW_DOWN) {
         /*Arrow Down*/ dropPlayer();
-      } else if (keyCode === 38) {
+      } else if (keyCode === KEY_ARROW_UP) {
         /*Arrow Up*/ rotatePlayerIfNotColliding(stage, 1);
       }
     }

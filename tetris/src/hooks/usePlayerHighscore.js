@@ -1,19 +1,6 @@
 import { formatDateDDMMYYYY } from "../tools";
 
 export const usePlayerHighscore = () => {
-    // const defaultHighscoreCookie = { username: '', highscore: 0, date: new Date() };
-    // const [highscore, setHighscore] = useState(defaultHighscoreCookie);
-
-    // const isNewHighscore = (score) => {
-    //     console.log('score > highscore.highscore ->', score, highscore.highscore);
-    //     if (score > highscore.highscore) {
-    //         console.log('NEW HIGHSCORE:', score);
-    //         return true;
-    //     }
-    //     console.log('NO HIGHSCORE:', score);
-    //     return false;
-    // }
-
     const readHighscoreCookie = () => {
         const cookieValue = document.cookie;
         let cookieUsername = '';
