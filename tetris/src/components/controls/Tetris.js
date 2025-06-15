@@ -198,7 +198,8 @@ const Tetris = () => {
       /* Start-Game-Menu Key-Handling */
       if (!gameStarted) {
         if (keyCode === 13) {
-          /*Enter*/ startGame(username);
+          /*Enter*/ 
+          // startGame(username); -> Does not work if the input is focused (The fetching process for the media resource was aborted by the user agent at the user's request)
         }
       }
     },
@@ -425,7 +426,7 @@ const Tetris = () => {
               items={[
                 <TextOutput
                   animatedColor
-                  text="REKTRIS"
+                  text="TETRIS"
                   fontFamily="Exo 2"
                   fontSize="7rem"
                 />,
@@ -589,7 +590,7 @@ const Tetris = () => {
               items={[
                 <TextOutput
                   animatedColor
-                  text="REKTRIS"
+                  text="TETRIS"
                   fontFamily="Exo 2"
                   fontSize="7rem"
                 />,
